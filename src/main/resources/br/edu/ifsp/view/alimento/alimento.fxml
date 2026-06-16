@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+  TASK-13 - Tela de Alimentos.
+  - Formulário (esquerda) + tabela (centro).
+  - Ao selecionar uma linha de "tableAlimentos", o controller deve
+    preencher os campos do formulário para permitir edição.
+  - btnSalvar decide entre INSERT/UPDATE conforme haja item selecionado.
+-->
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="br.edu.ifsp.controller.AlimentoController"
+            stylesheets="@../common.css">
+    <left>
+        <VBox spacing="10.0" prefWidth="280.0">
+            <padding>
+                <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
+            </padding>
+
+            <Label text="Cadastro de Alimento" styleClass="titulo"/>
+
+            <GridPane hgap="10.0" vgap="10.0">
+                <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="tfNome" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Proteína (g):" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="tfProteina" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Carboidrato (g):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="tfCarboidrato" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Gordura (g):" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <TextField fx:id="tfGordura" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                <Label text="Calorias (kcal):" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <TextField fx:id="tfCalorias" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+            </GridPane>
+
+            <HBox spacing="10.0">
+                <Button fx:id="btnSalvar" text="Salvar" styleClass="botao-primario" onAction="#onSalvar"/>
+                <Button fx:id="btnLimpar" text="Limpar" onAction="#onLimpar"/>
+                <Button fx:id="btnExcluir" text="Excluir" styleClass="botao-perigo" onAction="#onExcluir"/>
+            </HBox>
+        </VBox>
+    </left>
+    <center>
+        <VBox spacing="10.0">
+            <padding>
+                <Insets top="15.0" right="15.0" bottom="15.0" left="0.0"/>
+            </padding>
+
+            <Label text="Alimentos Cadastrados" styleClass="titulo"/>
+
+            <TableView fx:id="tableAlimentos" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colNome" text="Nome" prefWidth="150.0"/>
+                    <TableColumn fx:id="colProteina" text="Proteína" prefWidth="90.0"/>
+                    <TableColumn fx:id="colCarboidrato" text="Carboidrato" prefWidth="100.0"/>
+                    <TableColumn fx:id="colGordura" text="Gordura" prefWidth="90.0"/>
+                    <TableColumn fx:id="colCalorias" text="Calorias" prefWidth="90.0"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+</BorderPane>

@@ -1,0 +1,69 @@
+package br.edu.ifsp.service;
+
+import br.edu.ifsp.exceptions.EntidadeNaoEncontradaException;
+import br.edu.ifsp.model.Alimento;
+import br.edu.ifsp.model.Aluno;
+import br.edu.ifsp.model.ItemPlano;
+import br.edu.ifsp.model.PlanoDiario;
+import br.edu.ifsp.repository.ItemPlanoDao;
+import br.edu.ifsp.repository.PlanoDiarioDao;
+
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+
+public class PlanoDiarioService {
+    private final PlanoValidacaoService planoValidacao;
+    private final PlanoDiarioDao planoDiarioDao;
+    private final ItemPlanoDao itemPlanoDao;
+
+    public PlanoDiarioService() {
+        this.planoValidacao = new PlanoValidacaoService();
+        this.planoDiarioDao = new PlanoDiarioDao();
+        this.itemPlanoDao = new ItemPlanoDao();
+    }
+
+    public PlanoDiario buscarOuCriarPlanoDoDia(Aluno aluno, LocalDate data){
+        return planoDiarioDao.buscarPorAlunoEData(aluno.getId(), data)
+                .map(plano -> {
+                    var itens =  new ArrayList<>(itemPlanoDao.buscarPorPlano(plano.getId()));
+                    plano.setItens(itens);
+
+                    return plano;
+                }).orElseGet(() -> {
+                    PlanoDiario novoPlano = new PlanoDiario();
+                    novoPlano.setAluno(aluno);
+                    novoPlano.setData(data);
+                    novoPlano.setItens(new ArrayList<>());
+                    planoDiarioDao.inserirPlanoDiario(novoPlano);
+
+                    return novoPlano;
+                });
+    }
+
+    public void adicionarItem(PlanoDiario plano, Alimento alimento, double quantidade){
+        ItemPlano item = new ItemPlano();
+        item.setAlimento(alimento);
+        item.setQuantidade(quantidade);
+        item.calcularCaloriasTotais();
+
+        planoValidacao.validarAdicaoItem(plano, item);
+        itemPlanoDao.inserirItem(item, plano.getId());
+        plano.getItens().add(item);
+    }
+
+    public void removerItem(PlanoDiario plano, Long idRemover){
+        int linhasAfetadas = itemPlanoDao.removerItem(idRemover);
+        if(linhasAfetadas == 0){
+            throw new EntidadeNaoEncontradaException("Erro na remoção: item com id: "
+                    + idRemover + " não encontrado.");
+        }
+
+        plano.getItens().removeIf(i ->
+                i.getId().equals(idRemover));
+    }
+
+    public double calcularTotalConsumido(PlanoDiario plano){
+        return plano.calcularTotalCaloriasConsumidas();
+    }
+}

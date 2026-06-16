@@ -1,0 +1,85 @@
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-color: #f4f6f8;
+}
+
+.titulo {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 0 0 5 0;
+}
+
+.botao-primario {
+    -fx-background-color: #2e86de;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+.botao-primario:hover {
+    -fx-background-color: #1b6fc2;
+}
+
+.botao-perigo {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+.botao-perigo:hover {
+    -fx-background-color: #c0392b;
+}
+
+.meta-calorica {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #16a085;
+}
+
+.resumo-box {
+    -fx-background-color: white;
+    -fx-padding: 12;
+    -fx-background-radius: 6;
+    -fx-border-color: #dcdde1;
+    -fx-border-radius: 6;
+}
+
+.resumo-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.info-box {
+    -fx-background-color: white;
+    -fx-padding: 25 40 25 40;
+    -fx-background-radius: 8;
+    -fx-border-color: #dcdde1;
+    -fx-border-radius: 8;
+}
+
+.info-label {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Estados da ProgressBar do Dashboard.
+   O controller deve adicionar a styleClass correspondente
+   (progress-ok / progress-alerta / progress-excedido) de acordo
+   com o percentual consumido. */
+.progress-ok > .bar {
+    -fx-background-color: #27ae60;
+}
+
+.progress-alerta > .bar {
+    -fx-background-color: #f39c12;
+}
+
+.progress-excedido > .bar {
+    -fx-background-color: #e74c3c;
+}

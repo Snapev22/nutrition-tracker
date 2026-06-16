@@ -1,0 +1,162 @@
+package br.edu.ifsp.controller;
+
+import br.edu.ifsp.model.Alimento;
+import br.edu.ifsp.repository.AlimentoDao;
+
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+
+import java.sql.SQLException;
+
+public class AlimentoController {
+
+    @FXML private TextField tfNome;
+    @FXML private TextField tfProteina;
+    @FXML private TextField tfCarboidrato;
+    @FXML private TextField tfGordura;
+    @FXML private TextField tfCalorias;
+
+    @FXML private Button btnSalvar;
+    @FXML private Button btnLimpar;
+    @FXML private Button btnExcluir;
+
+    @FXML private TableView<Alimento> tableAlimentos;
+    @FXML private TableColumn<Alimento, String> colNome;
+    @FXML private TableColumn<Alimento, Double> colProteina;
+    @FXML private TableColumn<Alimento, Double> colCarboidrato;
+    @FXML private TableColumn<Alimento, Double> colGordura;
+    @FXML private TableColumn<Alimento, Double> colCalorias;
+
+    private final AlimentoDao alimentoDao = new AlimentoDao();
+
+    private Alimento alimentoSelecionado = null;
+
+    @FXML
+    public void initialize() {
+        colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+        colProteina.setCellValueFactory(new PropertyValueFactory<>("proteina"));
+        colCarboidrato.setCellValueFactory(new PropertyValueFactory<>("carboidrato"));
+        colGordura.setCellValueFactory(new PropertyValueFactory<>("gordura"));
+        colCalorias.setCellValueFactory(new PropertyValueFactory<>("calorias"));
+
+        carregarTabela();
+
+        tableAlimentos.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((obs, oldItem, newItem) -> {
+            if (newItem != null) {
+                preencherFormulario(newItem);
+            }
+        });
+    }
+
+    private void carregarTabela() {
+        try {
+            tableAlimentos.setItems(FXCollections.observableArrayList(alimentoDao.listarTodosAlimentos()));
+        } catch (SQLException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro ao carregar alimentos: " + e.getMessage());
+        }
+    }
+
+    private void preencherFormulario(Alimento alimento) {
+        tfNome.setText(alimento.getNome());
+        tfProteina.setText(String.valueOf(alimento.getProteina()));
+        tfCarboidrato.setText(String.valueOf(alimento.getCarboidrato()));
+        tfGordura.setText(String.valueOf(alimento.getGordura()));
+        tfCalorias.setText(String.valueOf(alimento.getCalorias()));
+
+        alimentoSelecionado = alimento;
+    }
+
+    @FXML
+    private void onSalvar() {
+        if (tfNome.getText().isBlank()
+                || tfProteina.getText().isBlank()
+                || tfCarboidrato.getText().isBlank()
+                || tfGordura.getText().isBlank()
+                || tfCalorias.getText().isBlank()) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Preencha todos os campos");
+            return;
+        }
+
+        double proteina;
+        double carboidrato;
+        double gordura;
+        double calorias;
+        try {
+            proteina = Double.parseDouble(tfProteina.getText());
+            carboidrato = Double.parseDouble(tfCarboidrato.getText());
+            gordura = Double.parseDouble(tfGordura.getText());
+            calorias = Double.parseDouble(tfCalorias.getText());
+        } catch (NumberFormatException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Valores numéricos inválidos");
+            return;
+        }
+
+        try {
+            if (alimentoSelecionado == null) {
+                Alimento novoAlimento = new Alimento();
+                novoAlimento.setNome(tfNome.getText());
+                novoAlimento.setProteina(proteina);
+                novoAlimento.setCarboidrato(carboidrato);
+                novoAlimento.setGordura(gordura);
+                novoAlimento.setCalorias(calorias);
+
+                alimentoDao.inserir(novoAlimento);
+            } else {
+                alimentoSelecionado.setNome(tfNome.getText());
+                alimentoSelecionado.setProteina(proteina);
+                alimentoSelecionado.setCarboidrato(carboidrato);
+                alimentoSelecionado.setGordura(gordura);
+                alimentoSelecionado.setCalorias(calorias);
+
+                alimentoDao.alterarAlimento(alimentoSelecionado);
+            }
+        } catch (SQLException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro ao salvar alimento: " + e.getMessage());
+            return;
+        }
+
+        carregarTabela();
+        limparFormulario();
+    }
+
+    @FXML
+    private void onLimpar() {
+        limparFormulario();
+    }
+
+    private void limparFormulario() {
+        tfNome.setText("");
+        tfProteina.setText("");
+        tfCarboidrato.setText("");
+        tfGordura.setText("");
+        tfCalorias.setText("");
+
+        alimentoSelecionado = null;
+        tableAlimentos.getSelectionModel().clearSelection();
+    }
+
+    @FXML
+    private void onExcluir() {
+        if (alimentoSelecionado == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Selecione um alimento na tabela");
+            return;
+        }
+
+        alimentoDao.removerAlimento(alimentoSelecionado.getId());
+        carregarTabela();
+        limparFormulario();
+    }
+
+    private void mostrarAlerta(Alert.AlertType tipo, String mensagem) {
+        Alert alert = new Alert(tipo, mensagem);
+        alert.showAndWait();
+    }
+}

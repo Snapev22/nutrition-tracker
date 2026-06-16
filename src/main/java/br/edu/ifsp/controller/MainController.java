@@ -1,0 +1,73 @@
+package br.edu.ifsp.controller;
+
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+
+import java.io.IOException;
+
+public class MainController {
+
+    @FXML
+    private StackPane paneCentral;
+
+    @FXML
+    private Button btnNavAlunos;
+
+    @FXML
+    private Button btnNavAlimentos;
+
+    @FXML
+    private Button btnNavPlano;
+
+    @FXML
+    private Button btnNavDashboard;
+
+    @FXML
+    public void initialize() {
+        carregarTela("/br/edu/ifsp/view/aluno/aluno.fxml");
+    }
+
+    @FXML
+    private void onNavAlunos() {
+        carregarTela("/br/edu/ifsp/view/aluno/aluno.fxml");
+    }
+
+    @FXML
+    private void onNavAlimentos() {
+        carregarTela("/br/edu/ifsp/view/alimento/alimento.fxml");
+    }
+
+    @FXML
+    private void onNavPlano() {
+        carregarTela("/br/edu/ifsp/view/plano/plano.fxml");
+    }
+
+    @FXML
+    private void onNavDashboard() {
+        carregarTela("/br/edu/ifsp/view/dashboard/dashboard.fxml");
+    }
+
+    private void carregarTela(String caminhoFxml) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(caminhoFxml));
+            Node tela = loader.load();
+            paneCentral.getChildren().setAll(tela);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            Alert alert = new Alert(
+                    Alert.AlertType.ERROR,
+                    "Erro ao carregar a tela:\n\n"
+                            + caminhoFxml
+                            + "\n\n"
+                            + e
+            );
+
+            alert.showAndWait();
+        }
+    }
+}
