@@ -6,7 +6,7 @@ import br.edu.ifsp.model.Alimento;
 import br.edu.ifsp.model.Aluno;
 import br.edu.ifsp.model.ItemPlano;
 import br.edu.ifsp.model.PlanoDiario;
-import br.edu.ifsp.repository.AlimentoDao;
+import br.edu.ifsp.service.AlimentoService;
 import br.edu.ifsp.service.AlunoService;
 import br.edu.ifsp.service.PlanoDiarioService;
 
@@ -24,7 +24,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.StringConverter;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class PlanoController {
@@ -49,7 +48,7 @@ public class PlanoController {
     @FXML private Button btnRemoverItem;
 
     private final AlunoService alunoService = new AlunoService();
-    private final AlimentoDao alimentoDao = new AlimentoDao();
+    private final AlimentoService alimentoService = new AlimentoService();
     private final PlanoDiarioService planoDiarioService = new PlanoDiarioService();
 
     private PlanoDiario planoAtual = null;
@@ -69,11 +68,7 @@ public class PlanoController {
             }
         });
 
-        try {
-            cbAlimento.setItems(FXCollections.observableArrayList(alimentoDao.listarTodosAlimentos()));
-        } catch (SQLException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Erro ao carregar alimentos: " + e.getMessage());
-        }
+        cbAlimento.setItems(FXCollections.observableArrayList(alimentoService.listar()));
         cbAlimento.setConverter(new StringConverter<Alimento>() {
             @Override
             public String toString(Alimento alimento) {

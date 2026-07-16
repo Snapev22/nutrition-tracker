@@ -3,6 +3,7 @@ package br.edu.ifsp.controller;
 import br.edu.ifsp.model.Alimento;
 import br.edu.ifsp.repository.AlimentoDao;
 
+import br.edu.ifsp.service.AlimentoService;
 import br.edu.ifsp.util.DialogoUtils;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -34,7 +35,7 @@ public class AlimentoController {
     @FXML private TableColumn<Alimento, Double> colGordura;
     @FXML private TableColumn<Alimento, Double> colCalorias;
 
-    private final AlimentoDao alimentoDao = new AlimentoDao();
+    private final AlimentoService alimentoService = new AlimentoService();
 
     private Alimento alimentoSelecionado = null;
 
@@ -58,11 +59,7 @@ public class AlimentoController {
     }
 
     private void carregarTabela() {
-        try {
-            tableAlimentos.setItems(FXCollections.observableArrayList(alimentoDao.listarTodosAlimentos()));
-        } catch (SQLException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Erro ao carregar alimentos: " + e.getMessage());
-        }
+        tableAlimentos.setItems(FXCollections.observableArrayList(alimentoService.listar()));
     }
 
     private void preencherFormulario(Alimento alimento) {
@@ -99,31 +96,24 @@ public class AlimentoController {
             mostrarAlerta(Alert.AlertType.ERROR, "Valores numéricos inválidos");
             return;
         }
+        if (alimentoSelecionado == null) {
+            Alimento novoAlimento = new Alimento();
+            novoAlimento.setNome(tfNome.getText());
+            novoAlimento.setProteina(proteina);
+            novoAlimento.setCarboidrato(carboidrato);
+            novoAlimento.setGordura(gordura);
+            novoAlimento.setCalorias(calorias);
 
-        try {
-            if (alimentoSelecionado == null) {
-                Alimento novoAlimento = new Alimento();
-                novoAlimento.setNome(tfNome.getText());
-                novoAlimento.setProteina(proteina);
-                novoAlimento.setCarboidrato(carboidrato);
-                novoAlimento.setGordura(gordura);
-                novoAlimento.setCalorias(calorias);
+           alimentoService.cadastrar(novoAlimento);
+        } else {
+            alimentoSelecionado.setNome(tfNome.getText());
+            alimentoSelecionado.setProteina(proteina);
+            alimentoSelecionado.setCarboidrato(carboidrato);
+            alimentoSelecionado.setGordura(gordura);
+            alimentoSelecionado.setCalorias(calorias);
 
-                alimentoDao.inserir(novoAlimento);
-            } else {
-                alimentoSelecionado.setNome(tfNome.getText());
-                alimentoSelecionado.setProteina(proteina);
-                alimentoSelecionado.setCarboidrato(carboidrato);
-                alimentoSelecionado.setGordura(gordura);
-                alimentoSelecionado.setCalorias(calorias);
-
-                alimentoDao.alterarAlimento(alimentoSelecionado);
-            }
-        } catch (SQLException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Erro ao salvar alimento: " + e.getMessage());
-            return;
+            alimentoService.alterar(alimentoSelecionado);
         }
-
         carregarTabela();
         limparFormulario();
     }
@@ -155,7 +145,7 @@ public class AlimentoController {
             return;
         }
 
-        alimentoDao.removerAlimento(alimentoSelecionado.getId());
+        alimentoService.deletar(alimentoSelecionado.getId());
         carregarTabela();
         limparFormulario();
     }
