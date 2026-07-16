@@ -79,6 +79,27 @@ public class ItemPlanoDao {
         }
     }
 
+    public double somarCaloriasPorPlano(Long planoId){
+        String sqlQuery = """
+                SELECT COALESCE(SUM(calorias_totais), 0) AS total
+                FROM item_plano
+                WHERE id_plano = ?
+                """;
+        try(Connection connection = ConnectionFactory.getConnection();
+            PreparedStatement ps = connection.prepareStatement(sqlQuery)){
+
+            ps.setLong(1, planoId);
+            try(ResultSet rs = ps.executeQuery()){
+                if(rs.next()){
+                    return rs.getDouble("total");
+                }
+            }
+            return 0.0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao somar calorias por plano. ", e);
+        }
+    }
+
     public int removerItem(Long id) {
         String sqlQuery = "DELETE FROM item_plano WHERE id_item_plano = ?";
 

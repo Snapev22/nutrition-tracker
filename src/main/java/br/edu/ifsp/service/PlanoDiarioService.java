@@ -64,6 +64,7 @@ public class PlanoDiarioService {
     }
 
     public double calcularTotalConsumido(PlanoDiario plano){
-        return plano.calcularTotalCaloriasConsumidas();
+
+        return itemPlanoDao.somarCaloriasPorPlano(plano.getId());
     }
 }
