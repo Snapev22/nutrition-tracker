@@ -53,6 +53,7 @@ build/
 # Arquivos de configuração locais
 application-local.properties
 application-dev.properties
+src/main/resources/application.properties
 
 # Variáveis de ambiente
 .env
