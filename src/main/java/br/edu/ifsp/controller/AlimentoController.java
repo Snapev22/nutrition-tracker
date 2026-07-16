@@ -3,6 +3,7 @@ package br.edu.ifsp.controller;
 import br.edu.ifsp.model.Alimento;
 import br.edu.ifsp.repository.AlimentoDao;
 
+import br.edu.ifsp.util.DialogoUtils;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -147,6 +148,10 @@ public class AlimentoController {
     private void onExcluir() {
         if (alimentoSelecionado == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Selecione um alimento na tabela");
+            return;
+        }
+
+        if(!DialogoUtils.confirmarExclusao(alimentoSelecionado.getNome())){
             return;
         }
 

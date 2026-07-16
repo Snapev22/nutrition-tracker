@@ -8,6 +8,7 @@ import br.edu.ifsp.model.enums.Objetivo;
 import br.edu.ifsp.model.enums.Sexo;
 import br.edu.ifsp.service.AlunoService;
 
+import br.edu.ifsp.util.DialogoUtils;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -248,6 +249,10 @@ public class AlunoController {
     private void onExcluir() {
         if (alunoSelecionado == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Selecione um aluno na tabela");
+            return;
+        }
+
+        if(!DialogoUtils.confirmarExclusao(alunoSelecionado.getNome())){
             return;
         }
 
