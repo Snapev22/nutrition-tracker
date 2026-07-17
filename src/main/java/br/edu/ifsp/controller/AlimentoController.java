@@ -6,6 +6,7 @@ import br.edu.ifsp.repository.AlimentoDao;
 import br.edu.ifsp.service.AlimentoService;
 import br.edu.ifsp.util.DialogoUtils;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -36,7 +37,6 @@ public class AlimentoController {
     @FXML private TableColumn<Alimento, Double> colCalorias;
 
     private final AlimentoService alimentoService = new AlimentoService();
-
     private Alimento alimentoSelecionado = null;
 
     @FXML
@@ -96,26 +96,39 @@ public class AlimentoController {
             mostrarAlerta(Alert.AlertType.ERROR, "Valores numéricos inválidos");
             return;
         }
-        if (alimentoSelecionado == null) {
-            Alimento novoAlimento = new Alimento();
-            novoAlimento.setNome(tfNome.getText());
-            novoAlimento.setProteina(proteina);
-            novoAlimento.setCarboidrato(carboidrato);
-            novoAlimento.setGordura(gordura);
-            novoAlimento.setCalorias(calorias);
 
-           alimentoService.cadastrar(novoAlimento);
-        } else {
-            alimentoSelecionado.setNome(tfNome.getText());
-            alimentoSelecionado.setProteina(proteina);
-            alimentoSelecionado.setCarboidrato(carboidrato);
-            alimentoSelecionado.setGordura(gordura);
-            alimentoSelecionado.setCalorias(calorias);
+        boolean isNovoCadastro = (alimentoSelecionado == null);
+        Alimento alimentoParaSalvar = isNovoCadastro ? new Alimento() : alimentoSelecionado;
 
-            alimentoService.alterar(alimentoSelecionado);
-        }
-        carregarTabela();
-        limparFormulario();
+        alimentoParaSalvar.setNome(tfNome.getText());
+        alimentoParaSalvar.setProteina(proteina);
+        alimentoParaSalvar.setCarboidrato(carboidrato);
+        alimentoParaSalvar.setGordura(gordura);
+        alimentoParaSalvar.setCalorias(calorias);
+
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                if(isNovoCadastro){
+                    alimentoService.cadastrar(alimentoParaSalvar);
+                }else{
+                    alimentoService.alterar(alimentoParaSalvar);
+                }
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            carregarTabela();
+            limparFormulario();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable erro = task.getException();
+            mostrarAlerta(Alert.AlertType.ERROR, erro.getMessage());
+        });
+
+        new Thread(task).start();
     }
 
     @FXML
@@ -145,9 +158,27 @@ public class AlimentoController {
             return;
         }
 
-        alimentoService.deletar(alimentoSelecionado.getId());
-        carregarTabela();
-        limparFormulario();
+        Long idParaExcluir = alimentoSelecionado.getId();
+
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                alimentoService.deletar(idParaExcluir);
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            carregarTabela();
+            limparFormulario();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable erro = task.getException();
+            mostrarAlerta(Alert.AlertType.ERROR, erro.getMessage());
+        });
+
+        new Thread(task).start();
     }
 
     private void mostrarAlerta(Alert.AlertType tipo, String mensagem) {

@@ -10,6 +10,7 @@ import br.edu.ifsp.service.AlunoService;
 
 import br.edu.ifsp.util.DialogoUtils;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -20,6 +21,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.StringConverter;
+
+import java.util.List;
 
 public class AlunoController {
 
@@ -139,8 +142,23 @@ public class AlunoController {
     }
 
     private void carregarTabela() {
-        tableAlunos.setItems(FXCollections.observableArrayList(alunoService.listar()));
+        Task<List<Aluno>> task = new Task<>() {
+            @Override
+            protected List<Aluno> call() throws Exception {
+                return alunoService.listar();
+            }
+        };
 
+        task.setOnSucceeded(event -> {
+            tableAlunos.setItems(FXCollections.observableArrayList(task.getValue()));
+        });
+
+        task.setOnFailed(event -> {
+            Throwable erro = task.getException();
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro ao carregar alunos: " + erro.getMessage());
+        });
+
+        new Thread(task).start();
     }
 
     private void preencherFormulario(Aluno aluno) {
@@ -183,45 +201,41 @@ public class AlunoController {
             return;
         }
 
-        if (alunoSelecionado == null) {
-            Aluno novoAluno = new Aluno();
-            novoAluno.setNome(tfNome.getText());
-            novoAluno.setIdade(idade);
-            novoAluno.setPeso(peso);
-            novoAluno.setAltura(altura);
-            novoAluno.setSexo(cbSexo.getValue());
-            novoAluno.setFatorAtividade(cbFatorAtividade.getValue());
-            novoAluno.setObjetivo(cbObjetivo.getValue());
+        boolean isNovoCadastro = (alunoSelecionado == null);
+        Aluno alunoParaSalvar = isNovoCadastro ? new Aluno() : alunoSelecionado;
 
-            try {
-                alunoService.cadastrar(novoAluno);
-            } catch (RegraDeNegocioException e) {
-                mostrarAlerta(Alert.AlertType.ERROR, e.getMessage());
-                return;
-            }
+        alunoParaSalvar.setNome(tfNome.getText());
+        alunoParaSalvar.setIdade(idade);
+        alunoParaSalvar.setPeso(peso);
+        alunoParaSalvar.setAltura(altura);
+        alunoParaSalvar.setSexo(cbSexo.getValue());
+        alunoParaSalvar.setFatorAtividade(cbFatorAtividade.getValue());
+        alunoParaSalvar.setObjetivo(cbObjetivo.getValue());
 
-            lblMetaCalorica.setText(String.format("Meta: %.2f kcal", novoAluno.getMetaCalorias()));
-        } else {
-            alunoSelecionado.setNome(tfNome.getText());
-            alunoSelecionado.setIdade(idade);
-            alunoSelecionado.setPeso(peso);
-            alunoSelecionado.setAltura(altura);
-            alunoSelecionado.setSexo(cbSexo.getValue());
-            alunoSelecionado.setFatorAtividade(cbFatorAtividade.getValue());
-            alunoSelecionado.setObjetivo(cbObjetivo.getValue());
+       Task<Void> task = new Task<>() {
+           @Override
+           protected Void call() {
+               if(isNovoCadastro){
+                   alunoService.cadastrar(alunoParaSalvar);
+               }else{
+                   alunoService.alter(alunoParaSalvar);
+               }
+               return null;
+           }
+       };
 
-            try {
-                alunoService.alter(alunoSelecionado);
-            } catch (EntidadeNaoEncontradaException e) {
-                mostrarAlerta(Alert.AlertType.ERROR, e.getMessage());
-                return;
-            }
+       task.setOnSucceeded(event -> {
+           lblMetaCalorica.setText(String.format("Meta: %.2f kcal", alunoParaSalvar.getMetaCalorias()));
+           carregarTabela();
+           limparFormulario();
+        });
 
-            lblMetaCalorica.setText(String.format("Meta: %.2f kcal", alunoSelecionado.getMetaCalorias()));
-        }
+        task.setOnFailed(event -> {
+            Throwable erro = task.getException();
+            mostrarAlerta(Alert.AlertType.ERROR, erro.getMessage());
+        });
 
-        carregarTabela();
-        limparFormulario();
+        new Thread(task).start();
     }
 
     @FXML
@@ -256,15 +270,27 @@ public class AlunoController {
             return;
         }
 
-        try {
-            alunoService.deletar(alunoSelecionado.getId());
-        } catch (EntidadeNaoEncontradaException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, e.getMessage());
-            return;
-        }
+        Long idParaExcluir = alunoSelecionado.getId();
 
-        carregarTabela();
-        limparFormulario();
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                alunoService.deletar(alunoSelecionado.getId());
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            carregarTabela();
+            limparFormulario();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable erro = task.getException();
+            mostrarAlerta(Alert.AlertType.ERROR, erro.getMessage());
+        });
+
+        new Thread(task).start();
     }
 
     private void mostrarAlerta(Alert.AlertType tipo, String mensagem) {
