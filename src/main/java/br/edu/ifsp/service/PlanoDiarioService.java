@@ -26,9 +26,9 @@ public class PlanoDiarioService {
     public PlanoDiario buscarOuCriarPlanoDoDia(Aluno aluno, LocalDate data){
         return planoDiarioDao.buscarPorAlunoEData(aluno.getId(), data)
                 .map(plano -> {
+                    plano.setAluno(aluno);
                     var itens =  new ArrayList<>(itemPlanoDao.buscarPorPlano(plano.getId()));
                     plano.setItens(itens);
-
                     return plano;
                 }).orElseGet(() -> {
                     PlanoDiario novoPlano = new PlanoDiario();
@@ -36,7 +36,6 @@ public class PlanoDiarioService {
                     novoPlano.setData(data);
                     novoPlano.setItens(new ArrayList<>());
                     planoDiarioDao.inserirPlanoDiario(novoPlano);
-
                     return novoPlano;
                 });
     }

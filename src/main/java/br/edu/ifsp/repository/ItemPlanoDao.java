@@ -83,7 +83,7 @@ public class ItemPlanoDao {
         String sqlQuery = """
                 SELECT COALESCE(SUM(calorias_totais), 0) AS total
                 FROM item_plano
-                WHERE id_plano = ?
+                WHERE id_plano_diario = ?
                 """;
         try(Connection connection = ConnectionFactory.getConnection();
             PreparedStatement ps = connection.prepareStatement(sqlQuery)){

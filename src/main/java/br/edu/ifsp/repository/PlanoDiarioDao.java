@@ -57,13 +57,8 @@ public class PlanoDiarioDao {
                     LocalDate data = rs.getDate("data").toLocalDate();
 
                     PlanoDiario plano = new PlanoDiario();
-
                     plano.setId(idPlano);
                     plano.setData(data);
-                    plano.setAluno(alunoDao.
-                            buscarPorId(idAluno)
-                            .orElseThrow(() -> new RuntimeException("Aluno não encontrado. Id: " + idAluno))
-                            );
 
                     planos.add(plano);
                 }
@@ -88,15 +83,9 @@ public class PlanoDiarioDao {
 
             try(ResultSet rs = ps.executeQuery()){
                 if(rs.next()){
-                    AlunoDao alunoDao = new AlunoDao();
-                    Long idPlano = rs.getLong("id");
-                    LocalDate data = rs.getDate("data").toLocalDate();
-
                     PlanoDiario plano = new PlanoDiario();
-                    plano.setId(idPlano);
-                    plano.setData(data);
-                    plano.setAluno(alunoDao.buscarPorId(idAluno)
-                            .orElseThrow(() -> new RuntimeException("Aluno não encontrado. Id: " + idAluno)));
+                    plano.setId(rs.getLong("id"));
+                    plano.setData(rs.getDate("data").toLocalDate());
 
                     return Optional.of(plano);
                 }
