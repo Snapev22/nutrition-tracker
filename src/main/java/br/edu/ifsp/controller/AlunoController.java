@@ -8,6 +8,7 @@ import br.edu.ifsp.model.enums.Objetivo;
 import br.edu.ifsp.model.enums.Sexo;
 import br.edu.ifsp.service.AlunoService;
 
+import br.edu.ifsp.util.ConverterUtils;
 import br.edu.ifsp.util.DialogoUtils;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
@@ -72,65 +73,35 @@ public class AlunoController {
     }
 
     private void configurarConversores() {
-        cbSexo.setConverter(new StringConverter<Sexo>() {
-            @Override
-            public String toString(Sexo sexo) {
-                if (sexo == null) {
-                    return "";
-                }
-                return switch (sexo) {
-                    case MASCULINO -> "Masculino";
-                    case FEMININO -> "Feminino";
-                };
-            }
-
-            @Override
-            public Sexo fromString(String string) {
-                return null;
-            }
-        });
-
-        cbFatorAtividade.setConverter(new StringConverter<FatorAtividade>() {
-            @Override
-            public String toString(FatorAtividade fator) {
-                if (fator == null) {
-                    return "";
-                }
-                return switch (fator) {
-                    case SEDENTARIO -> "Sedentário";
-                    case LEVEMENTE_ATIVO -> "Levemente Ativo";
-                    case MODERADAMENTE_ATIVO -> "Moderadamente Ativo";
-                    case MUITO_ATIVO -> "Muito Ativo";
-                    case EXTREMAMENTE_ATIVO -> "Extremamente Ativo";
-                };
-            }
-
-            @Override
-            public FatorAtividade fromString(String string) {
-                return null;
-            }
-        });
-
-        cbObjetivo.setConverter(new StringConverter<Objetivo>() {
-            @Override
-            public String toString(Objetivo objetivo) {
-                if (objetivo == null) {
-                    return "";
-                }
-                return switch (objetivo) {
-                    case EMAGRECER -> "Emagrecer";
-                    case MANTER -> "Manter Peso";
-                    case HIPERTROFIA -> "Ganhar Massa";
-                };
-            }
-
-            @Override
-            public Objetivo fromString(String string) {
-                return null;
-            }
-        });
+       cbSexo.setConverter(ConverterUtils.converterPorFuncao(this::descricaoSexo));
+       cbFatorAtividade.setConverter(ConverterUtils.converterPorFuncao(this::descricaoFatorAtividade));
+       cbObjetivo.setConverter(ConverterUtils.converterPorFuncao(this::descricaoObjetivo));
     }
 
+    private String descricaoSexo(Sexo sexo){
+        return switch (sexo){
+            case MASCULINO -> "Masculino";
+            case FEMININO -> "Feminino";
+        };
+    }
+
+    private String descricaoFatorAtividade(FatorAtividade fatorAtividade){
+        return switch (fatorAtividade){
+            case SEDENTARIO -> "Sedentario";
+            case LEVEMENTE_ATIVO -> "Levemente Ativo";
+            case MODERADAMENTE_ATIVO -> "Moderamente Ativo";
+            case MUITO_ATIVO -> "Muito Ativo";
+            case EXTREMAMENTE_ATIVO -> "Extremamente Ativo";
+        };
+    }
+
+    private String descricaoObjetivo(Objetivo objetivo){
+        return switch (objetivo){
+            case MANTER -> "Manter";
+            case HIPERTROFIA -> "Hipertrofia";
+            case EMAGRECER -> "Emagrecer";
+        };
+    }
     private void configurarColunas() {
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colIdade.setCellValueFactory(new PropertyValueFactory<>("idade"));
@@ -275,7 +246,7 @@ public class AlunoController {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                alunoService.deletar(alunoSelecionado.getId());
+                alunoService.deletar(idParaExcluir);
                 return null;
             }
         };

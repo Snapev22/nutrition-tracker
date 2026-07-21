@@ -10,6 +10,7 @@ import br.edu.ifsp.service.AlimentoService;
 import br.edu.ifsp.service.AlunoService;
 import br.edu.ifsp.service.PlanoDiarioService;
 
+import br.edu.ifsp.util.ConverterUtils;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -56,30 +57,10 @@ public class PlanoController {
     @FXML
     public void initialize() {
         cbAluno.setItems(FXCollections.observableArrayList(alunoService.listar()));
-        cbAluno.setConverter(new StringConverter<Aluno>() {
-            @Override
-            public String toString(Aluno aluno) {
-                return aluno == null ? "" : aluno.getNome();
-            }
-
-            @Override
-            public Aluno fromString(String string) {
-                return null;
-            }
-        });
+        cbAluno.setConverter(ConverterUtils.converterPorFuncao(Aluno::getNome));
 
         cbAlimento.setItems(FXCollections.observableArrayList(alimentoService.listar()));
-        cbAlimento.setConverter(new StringConverter<Alimento>() {
-            @Override
-            public String toString(Alimento alimento) {
-                return alimento == null ? "" : alimento.getNome();
-            }
-
-            @Override
-            public Alimento fromString(String string) {
-                return null;
-            }
-        });
+        cbAlimento.setConverter(ConverterUtils.converterPorFuncao(Alimento::getNome));
 
         dpData.setValue(LocalDate.now());
 

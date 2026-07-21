@@ -16,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class AlimentoController {
 
@@ -59,7 +60,21 @@ public class AlimentoController {
     }
 
     private void carregarTabela() {
-        tableAlimentos.setItems(FXCollections.observableArrayList(alimentoService.listar()));
+        Task<List<Alimento>> task = new Task<>() {
+            @Override
+            protected List<Alimento> call() {
+                return alimentoService.listar();
+            }
+        };
+
+        task.setOnSucceeded(event -> tableAlimentos.setItems(FXCollections.observableArrayList(task.getValue())));
+
+        task.setOnFailed(event -> {
+            Throwable erro = task.getException();
+            mostrarAlerta(Alert.AlertType.ERROR, "Erro ao carregar alimentos: " + erro.getMessage());
+        });
+
+        new Thread(task).start();
     }
 
     private void preencherFormulario(Alimento alimento) {
