@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class AlimentoDao {
 
-    public void inserir(Alimento alimento) throws SQLException {
+    public void inserir(Alimento alimento) {
         String sqlQuery = """
                     INSERT INTO alimento (nome, proteina,  gordura,  carboidrato, calorias)
                     VALUES (?, ?, ?, ?, ?)
@@ -36,7 +36,7 @@ public class AlimentoDao {
         }
     }
 
-    public Optional<Alimento> buscarPorId(Long id) throws SQLException {
+    public Optional<Alimento> buscarPorId(Long id) {
         String sqlQuery ="""
                 SELECT id_alimento, nome, proteina, gordura, carboidrato, calorias
 				FROM alimento
@@ -59,10 +59,10 @@ public class AlimentoDao {
     }
 
 
-    public  List<Alimento> listarTodosAlimentos() throws SQLException {
+    public  List<Alimento> listarTodosAlimentos() {
         String sqlQuery = """
                 SELECT  id_alimento, nome, proteina, gordura, carboidrato, calorias
-				 FROM alimento
+			    FROM alimento
                  """;
 
         List<Alimento> cadastrados = new ArrayList<>();
@@ -82,7 +82,7 @@ public class AlimentoDao {
 
     }
 
-    public int alterarAlimento(Alimento alimento) throws SQLException {
+    public int alterarAlimento(Alimento alimento) {
         String sqlQuery = """
                 UPDATE alimento
 				SET nome = ?, proteina = ?, gordura = ?, carboidrato = ?, calorias = ?
@@ -97,7 +97,7 @@ public class AlimentoDao {
             ps.setDouble(4, alimento.getCarboidrato());
             ps.setDouble(5, alimento.getCalorias());
 
-            ps.setDouble(6, alimento.getId());
+            ps.setLong(6, alimento.getId());
             return ps.executeUpdate();
         }catch (SQLException e){
             throw  new RuntimeException("Erro ao alterar cadastro de alimento. ", e);
