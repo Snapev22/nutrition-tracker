@@ -5,6 +5,7 @@ import br.edu.ifsp.model.PlanoDiario;
 import br.edu.ifsp.service.AlunoService;
 import br.edu.ifsp.service.PlanoDiarioService;
 
+import br.edu.ifsp.util.ConverterUtils;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -36,17 +37,7 @@ public class DashboardController {
     @FXML
     public void initialize() {
         cbAlunoDashboard.setItems(FXCollections.observableArrayList(alunoService.listar()));
-        cbAlunoDashboard.setConverter(new StringConverter<Aluno>() {
-            @Override
-            public String toString(Aluno aluno) {
-                return aluno == null ? "" : aluno.getNome();
-            }
-
-            @Override
-            public Aluno fromString(String string) {
-                return null;
-            }
-        });
+        cbAlunoDashboard.setConverter(ConverterUtils.converterPorFuncao(Aluno::getNome));
 
         dpDataDashboard.setValue(LocalDate.now());
     }
@@ -64,7 +55,7 @@ public class DashboardController {
         PlanoDiario plano = planoDiarioService.buscarOuCriarPlanoDoDia(alunoSelecionado, data);
 
         double meta = alunoSelecionado.getMetaCalorias();
-        double consumido = plano.calcularTotalCaloriasConsumidas();
+        double consumido = planoDiarioService.calcularTotalConsumido(plano);
         double restante = meta - consumido;
 
         lblMetaDashboard.setText(String.format("Meta diária: %.2f kcal", meta));
