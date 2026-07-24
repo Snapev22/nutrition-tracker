@@ -13,6 +13,7 @@ import br.edu.ifsp.service.PlanoDiarioService;
 import br.edu.ifsp.util.ConverterUtils;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -117,14 +118,28 @@ public class PlanoController {
             return;
         }
 
-        try {
-            planoDiarioService.adicionarItem(planoAtual, cbAlimento.getValue(), quantidade);
+        Alimento alimentoSelecionado = cbAlimento.getValue();
+
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() {
+                planoDiarioService.adicionarItem(planoAtual, alimentoSelecionado, quantidade);
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
             atualizarTabela();
             atualizarResumo();
             tfQuantidade.clear();
-        } catch (LimiteCaloricoExcedidoException e) {
-            mostrarAlerta(Alert.AlertType.WARNING, e.getMessage());
-        }
+        });
+
+        task.setOnFailed(event -> {
+            Throwable erro = task.getException();
+            mostrarAlerta(Alert.AlertType.WARNING, erro.getMessage());
+        });
+
+        new Thread(task).start();
     }
 
     @FXML
@@ -136,13 +151,27 @@ public class PlanoController {
             return;
         }
 
-        try {
-            planoDiarioService.removerItem(planoAtual, selecionado.getId());
+        Long idParaRemover = selecionado.getId();
+
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() {
+                planoDiarioService.removerItem(planoAtual, idParaRemover);
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
             atualizarTabela();
             atualizarResumo();
-        } catch (EntidadeNaoEncontradaException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, e.getMessage());
-        }
+        });
+
+        task.setOnFailed(event -> {
+            Throwable erro = task.getException();
+            mostrarAlerta(Alert.AlertType.ERROR, erro.getMessage());
+        });
+
+        new Thread(task).start();
     }
 
     private void mostrarAlerta(Alert.AlertType tipo, String mensagem) {
