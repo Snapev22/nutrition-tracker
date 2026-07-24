@@ -13,17 +13,25 @@
   - paneCentral é o ponto de injeção das telas: Alimentos, Alunos,
     Plano Diário e Dashboard.
 -->
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="br.edu.ifsp.controller.MainController"
             prefHeight="600.0" prefWidth="900.0"
             stylesheets="@common.css">
     <top>
-        <ToolBar>
+        <VBox>
+          <HBox alignment="CENTER_LEFT" styleClass="app-header">
+            <Label text="FitTech" styleClass="app-titulo"/>
+          </HBox>
+          <ToolBar>
             <Button fx:id="btnNavAlunos" text="Alunos" onAction="#onNavAlunos"/>
             <Button fx:id="btnNavAlimentos" text="Alimentos" onAction="#onNavAlimentos"/>
             <Button fx:id="btnNavPlano" text="Plano Diário" onAction="#onNavPlano"/>
             <Button fx:id="btnNavDashboard" text="Dashboard" onAction="#onNavDashboard"/>
-        </ToolBar>
+          </ToolBar>
+        </VBox>
     </top>
     <center>
         <StackPane fx:id="paneCentral">
