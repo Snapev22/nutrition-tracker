@@ -23,7 +23,7 @@
     <top>
         <VBox>
           <HBox alignment="CENTER_LEFT" styleClass="app-header">
-            <Label text="FitTech" styleClass="app-titulo"/>
+            <Label text="NutritionTracker" styleClass="app-titulo"/>
           </HBox>
           <ToolBar>
             <Button fx:id="btnNavAlunos" text="Alunos" onAction="#onNavAlunos"/>
