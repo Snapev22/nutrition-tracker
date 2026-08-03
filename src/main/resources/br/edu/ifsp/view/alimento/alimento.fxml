@@ -18,6 +18,7 @@
     preencher os campos do formulário para permitir edição.
   - btnSalvar decide entre INSERT/UPDATE conforme haja item selecionado.
 -->
+<?import javafx.scene.control.ComboBox?>
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="br.edu.ifsp.controller.AlimentoController"
             stylesheets="@../common.css">
@@ -44,6 +45,9 @@
 
                 <Label text="Calorias (kcal):" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
                 <TextField fx:id="tfCalorias" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                <Label text="Unidade de Medida:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="cbUnidadeMedida" GridPane.rowIndex="5" GridPane.columnIndex="1" prefWidth="180.0"/>
             </GridPane>
 
             <HBox spacing="10.0">
@@ -68,6 +72,7 @@
                     <TableColumn fx:id="colCarboidrato" text="Carboidrato" prefWidth="100.0"/>
                     <TableColumn fx:id="colGordura" text="Gordura" prefWidth="90.0"/>
                     <TableColumn fx:id="colCalorias" text="Calorias" prefWidth="90.0"/>
+                    <TableColumn fx:id="colUnidadeMedida" text="Unidade" prefWidth="130.0"/>
                 </columns>
             </TableView>
         </VBox>
