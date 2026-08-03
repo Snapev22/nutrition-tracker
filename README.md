@@ -82,7 +82,7 @@ Algumas decisões técnicas ao longo do desenvolvimento, documentadas via commit
    cd nutrition-tracker-java
    ```
 
-2. Crie o schema do banco de dados executando o script SQL disponível em [`/sql/schema.sql`](./sql/schema.sql) (ajuste conforme o nome do seu banco).
+2. Crie o schema do banco de dados executando o script SQL disponível em [`/sql/schema.sql`](./sql/nutrition-tracker.sql) (ajuste conforme o nome do seu banco).
 
 3. Configure as credenciais do banco:
    ```bash
