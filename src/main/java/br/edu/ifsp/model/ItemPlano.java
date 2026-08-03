@@ -1,5 +1,6 @@
 package br.edu.ifsp.model;
 
+import br.edu.ifsp.model.enums.UnidadeMedida;
 import lombok.*;
 
 @Getter
@@ -16,9 +17,14 @@ public class ItemPlano {
     private double caloriasTotais;
 
     public double calcularCaloriasTotais(){
-        caloriasTotais = quantidade * alimento.getCalorias();
+        caloriasTotais = calcularValorProporcional(alimento.getCalorias());
         return caloriasTotais;
     }
 
-
+    private  double calcularValorProporcional(double valorBase){
+        if(alimento.getUnidadeMedida() == UnidadeMedida.UNIDADE){
+            return quantidade * valorBase;
+        }
+        return (quantidade / 100) * valorBase;
+    }
 }

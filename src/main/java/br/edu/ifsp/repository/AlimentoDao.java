@@ -1,6 +1,7 @@
 package br.edu.ifsp.repository;
 
 import br.edu.ifsp.model.Alimento;
+import br.edu.ifsp.model.enums.UnidadeMedida;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ public class AlimentoDao {
 
     public void inserir(Alimento alimento) {
         String sqlQuery = """
-                    INSERT INTO alimento (nome, proteina,  gordura,  carboidrato, calorias)
+                    INSERT INTO alimento (nome, proteina,  gordura,  carboidrato, calorias, unidade_medida)
                     VALUES (?, ?, ?, ?, ?)
                 """;
         try (Connection connection = ConnectionFactory.getConnection();
@@ -23,6 +24,7 @@ public class AlimentoDao {
             ps.setDouble(3, alimento.getGordura());
             ps.setDouble(4, alimento.getCarboidrato());
             ps.setDouble(5, alimento.getCalorias());
+            ps.setString(6, alimento.getUnidadeMedida().name());
 
             ps.executeUpdate();
 
@@ -38,7 +40,7 @@ public class AlimentoDao {
 
     public Optional<Alimento> buscarPorId(Long id) {
         String sqlQuery ="""
-                SELECT id_alimento, nome, proteina, gordura, carboidrato, calorias
+                SELECT id_alimento, nome, proteina, gordura, carboidrato, calorias, unidade_medida
 				FROM alimento
 				WHERE id_alimento = ?
 				""";
@@ -61,7 +63,7 @@ public class AlimentoDao {
 
     public  List<Alimento> listarTodosAlimentos() {
         String sqlQuery = """
-                SELECT  id_alimento, nome, proteina, gordura, carboidrato, calorias
+                SELECT  id_alimento, nome, proteina, gordura, carboidrato, calorias, unidade_medida
 			    FROM alimento
                  """;
 
@@ -85,7 +87,7 @@ public class AlimentoDao {
     public int alterarAlimento(Alimento alimento) {
         String sqlQuery = """
                 UPDATE alimento
-				SET nome = ?, proteina = ?, gordura = ?, carboidrato = ?, calorias = ?
+				SET nome = ?, proteina = ?, gordura = ?, carboidrato = ?, calorias = ?, unidade_medida = ?
 				WHERE id_alimento = ?
 				""";
         try (Connection connection = ConnectionFactory.getConnection();
@@ -96,8 +98,9 @@ public class AlimentoDao {
             ps.setDouble(3, alimento.getGordura());
             ps.setDouble(4, alimento.getCarboidrato());
             ps.setDouble(5, alimento.getCalorias());
+            ps.setString(6, alimento.getUnidadeMedida().name());
 
-            ps.setLong(6, alimento.getId());
+            ps.setLong(7, alimento.getId());
             return ps.executeUpdate();
         }catch (SQLException e){
             throw  new RuntimeException("Erro ao alterar cadastro de alimento. ", e);
@@ -124,7 +127,8 @@ public class AlimentoDao {
         double carboidrato = rs.getDouble("carboidrato");
         double gordura = rs.getDouble("gordura");
         double calorias = rs.getDouble("calorias");
+        UnidadeMedida unidadeMedida = UnidadeMedida.valueOf(rs.getString("unidade_medida"));
 
-        return new Alimento(id, nome, proteina, gordura, carboidrato, calorias);
+        return new Alimento(id, nome, proteina, gordura, carboidrato, calorias, unidadeMedida);
     }
 }
