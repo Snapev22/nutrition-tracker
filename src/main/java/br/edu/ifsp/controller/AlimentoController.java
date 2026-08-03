@@ -1,21 +1,16 @@
 package br.edu.ifsp.controller;
 
 import br.edu.ifsp.model.Alimento;
-import br.edu.ifsp.repository.AlimentoDao;
-
+import br.edu.ifsp.model.enums.UnidadeMedida;
 import br.edu.ifsp.service.AlimentoService;
+import br.edu.ifsp.util.ConverterUtils;
 import br.edu.ifsp.util.DialogoUtils;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class AlimentoController {
@@ -25,6 +20,7 @@ public class AlimentoController {
     @FXML private TextField tfCarboidrato;
     @FXML private TextField tfGordura;
     @FXML private TextField tfCalorias;
+    @FXML private ComboBox<UnidadeMedida> cbUnidadeMedida;
 
     @FXML private Button btnSalvar;
     @FXML private Button btnLimpar;
@@ -36,17 +32,22 @@ public class AlimentoController {
     @FXML private TableColumn<Alimento, Double> colCarboidrato;
     @FXML private TableColumn<Alimento, Double> colGordura;
     @FXML private TableColumn<Alimento, Double> colCalorias;
+    @FXML private TableColumn<Alimento, UnidadeMedida> colUnidadeMedida;
 
     private final AlimentoService alimentoService = new AlimentoService();
     private Alimento alimentoSelecionado = null;
 
     @FXML
     public void initialize() {
+        cbUnidadeMedida.setItems(FXCollections.observableArrayList(UnidadeMedida.values()));
+        cbUnidadeMedida.setConverter(ConverterUtils.converterPorFuncao(this::descricaoUnidadeMedida));
+
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colProteina.setCellValueFactory(new PropertyValueFactory<>("proteina"));
         colCarboidrato.setCellValueFactory(new PropertyValueFactory<>("carboidrato"));
         colGordura.setCellValueFactory(new PropertyValueFactory<>("gordura"));
         colCalorias.setCellValueFactory(new PropertyValueFactory<>("calorias"));
+        colUnidadeMedida.setCellValueFactory(new PropertyValueFactory<>("unidadeMedida"));
 
         carregarTabela();
 
@@ -57,6 +58,13 @@ public class AlimentoController {
                 preencherFormulario(newItem);
             }
         });
+    }
+    private String descricaoUnidadeMedida(UnidadeMedida unidade) {
+        return switch (unidade) {
+            case GRAMAS -> "Gramas (por 100g)";
+            case MILILITROS -> "Mililitros (por 100ml)";
+            case UNIDADE -> "Unidade";
+        };
     }
 
     private void carregarTabela() {
@@ -83,6 +91,7 @@ public class AlimentoController {
         tfCarboidrato.setText(String.valueOf(alimento.getCarboidrato()));
         tfGordura.setText(String.valueOf(alimento.getGordura()));
         tfCalorias.setText(String.valueOf(alimento.getCalorias()));
+        cbUnidadeMedida.setValue(alimento.getUnidadeMedida());
 
         alimentoSelecionado = alimento;
     }
@@ -93,7 +102,8 @@ public class AlimentoController {
                 || tfProteina.getText().isBlank()
                 || tfCarboidrato.getText().isBlank()
                 || tfGordura.getText().isBlank()
-                || tfCalorias.getText().isBlank()) {
+                || tfCalorias.getText().isBlank()
+                || cbUnidadeMedida.getValue() == null) {
             mostrarAlerta(Alert.AlertType.ERROR, "Preencha todos os campos");
             return;
         }
@@ -120,6 +130,7 @@ public class AlimentoController {
         alimentoParaSalvar.setCarboidrato(carboidrato);
         alimentoParaSalvar.setGordura(gordura);
         alimentoParaSalvar.setCalorias(calorias);
+        alimentoParaSalvar.setUnidadeMedida(cbUnidadeMedida.getValue());
 
         Task<Void> task = new Task<Void>() {
             @Override
@@ -157,6 +168,7 @@ public class AlimentoController {
         tfCarboidrato.setText("");
         tfGordura.setText("");
         tfCalorias.setText("");
+        cbUnidadeMedida.setValue(null);
 
         alimentoSelecionado = null;
         tableAlimentos.getSelectionModel().clearSelection();
