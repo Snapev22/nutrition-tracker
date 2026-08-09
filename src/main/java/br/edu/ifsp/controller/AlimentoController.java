@@ -1,6 +1,7 @@
 package br.edu.ifsp.controller;
 
 import br.edu.ifsp.model.Alimento;
+import br.edu.ifsp.model.InformacaoNutricional;
 import br.edu.ifsp.model.enums.UnidadeMedida;
 import br.edu.ifsp.service.AlimentoService;
 import br.edu.ifsp.util.ConverterUtils;
@@ -10,7 +11,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import java.util.List;
 
 public class AlimentoController {
@@ -42,12 +43,27 @@ public class AlimentoController {
         cbUnidadeMedida.setItems(FXCollections.observableArrayList(UnidadeMedida.values()));
         cbUnidadeMedida.setConverter(ConverterUtils.converterPorFuncao(this::descricaoUnidadeMedida));
 
-        colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
-        colProteina.setCellValueFactory(new PropertyValueFactory<>("proteina"));
-        colCarboidrato.setCellValueFactory(new PropertyValueFactory<>("carboidrato"));
-        colGordura.setCellValueFactory(new PropertyValueFactory<>("gordura"));
-        colCalorias.setCellValueFactory(new PropertyValueFactory<>("calorias"));
-        colUnidadeMedida.setCellValueFactory(new PropertyValueFactory<>("unidadeMedida"));
+        colNome.setCellValueFactory(cellData ->
+                new ReadOnlyObjectWrapper<>(cellData.getValue().getNome()));
+
+        colProteina.setCellValueFactory(cellData ->
+                new ReadOnlyObjectWrapper<>(
+                        cellData.getValue().getInfoNutricional().getProteina()));
+
+        colCarboidrato.setCellValueFactory(cellData ->
+                new ReadOnlyObjectWrapper<>(
+                        cellData.getValue().getInfoNutricional().getCarboidrato()));
+
+        colGordura.setCellValueFactory(cellData ->
+                new ReadOnlyObjectWrapper<>(
+                        cellData.getValue().getInfoNutricional().getGordura()));
+
+        colCalorias.setCellValueFactory(cellData ->
+                new ReadOnlyObjectWrapper<>(
+                        cellData.getValue().getInfoNutricional().getCalorias()));
+
+        colUnidadeMedida.setCellValueFactory(cellData ->
+                new ReadOnlyObjectWrapper<>(cellData.getValue().getUnidadeMedida()));
 
         carregarTabela();
 
@@ -87,10 +103,10 @@ public class AlimentoController {
 
     private void preencherFormulario(Alimento alimento) {
         tfNome.setText(alimento.getNome());
-        tfProteina.setText(String.valueOf(alimento.getProteina()));
-        tfCarboidrato.setText(String.valueOf(alimento.getCarboidrato()));
-        tfGordura.setText(String.valueOf(alimento.getGordura()));
-        tfCalorias.setText(String.valueOf(alimento.getCalorias()));
+        tfProteina.setText(String.valueOf(alimento.getInfoNutricional().getProteina()));
+        tfCarboidrato.setText(String.valueOf(alimento.getInfoNutricional().getCarboidrato()));
+        tfGordura.setText(String.valueOf(alimento.getInfoNutricional().getGordura()));
+        tfCalorias.setText(String.valueOf(alimento.getInfoNutricional().getCalorias()));
         cbUnidadeMedida.setValue(alimento.getUnidadeMedida());
 
         alimentoSelecionado = alimento;
@@ -124,12 +140,10 @@ public class AlimentoController {
 
         boolean isNovoCadastro = (alimentoSelecionado == null);
         Alimento alimentoParaSalvar = isNovoCadastro ? new Alimento() : alimentoSelecionado;
+        InformacaoNutricional info = new InformacaoNutricional(calorias, proteina, carboidrato, gordura);
 
         alimentoParaSalvar.setNome(tfNome.getText());
-        alimentoParaSalvar.setProteina(proteina);
-        alimentoParaSalvar.setCarboidrato(carboidrato);
-        alimentoParaSalvar.setGordura(gordura);
-        alimentoParaSalvar.setCalorias(calorias);
+        alimentoParaSalvar.setInfoNutricional(info);
         alimentoParaSalvar.setUnidadeMedida(cbUnidadeMedida.getValue());
 
         Task<Void> task = new Task<Void>() {

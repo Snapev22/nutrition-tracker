@@ -1,14 +1,10 @@
 package br.edu.ifsp.service;
 
 import br.edu.ifsp.exceptions.EntidadeNaoEncontradaException;
-import br.edu.ifsp.model.Alimento;
-import br.edu.ifsp.model.Aluno;
-import br.edu.ifsp.model.ItemPlano;
-import br.edu.ifsp.model.PlanoDiario;
+import br.edu.ifsp.model.*;
 import br.edu.ifsp.repository.ItemPlanoDao;
 import br.edu.ifsp.repository.PlanoDiarioDao;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -44,7 +40,7 @@ public class PlanoDiarioService {
         ItemPlano item = new ItemPlano();
         item.setAlimento(alimento);
         item.setQuantidade(quantidade);
-        item.calcularCaloriasTotais();
+        item.calcularTotalNutricional();
 
         planoValidacao.validarAdicaoItem(plano, item);
         itemPlanoDao.inserirItem(item, plano.getId());
@@ -62,8 +58,7 @@ public class PlanoDiarioService {
                 i.getId().equals(idRemover));
     }
 
-    public double calcularTotalConsumido(PlanoDiario plano){
-
-        return itemPlanoDao.somarCaloriasPorPlano(plano.getId());
+    public InformacaoNutricional calcularResumoNutricional(PlanoDiario plano){
+        return itemPlanoDao.somarResumoPorPlano(plano.getId());
     }
 }

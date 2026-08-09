@@ -23,9 +23,8 @@ public class PlanoDiario {
     public double calcularTotalCaloriasConsumidas(){
         double totalCalorias = 0;
         for (ItemPlano item : itens){
-            totalCalorias += item.calcularCaloriasTotais();
+            totalCalorias += item.calcularTotalNutricional().getCalorias();
         }
-
         return totalCalorias;
     }
 }

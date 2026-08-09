@@ -1,6 +1,7 @@
 package br.edu.ifsp.repository;
 
 import br.edu.ifsp.model.Alimento;
+import br.edu.ifsp.model.InformacaoNutricional;
 import br.edu.ifsp.model.enums.UnidadeMedida;
 
 import java.sql.*;
@@ -14,16 +15,18 @@ public class AlimentoDao {
     public void inserir(Alimento alimento) {
         String sqlQuery = """
                     INSERT INTO alimento (nome, proteina,  gordura,  carboidrato, calorias, unidade_medida)
-                    VALUES (?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?)
                 """;
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement ps = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS)) {
 
+            InformacaoNutricional info = alimento.getInfoNutricional();
+
             ps.setString(1, alimento.getNome());
-            ps.setDouble(2, alimento.getProteina());
-            ps.setDouble(3, alimento.getGordura());
-            ps.setDouble(4, alimento.getCarboidrato());
-            ps.setDouble(5, alimento.getCalorias());
+            ps.setDouble(2, info.getProteina());
+            ps.setDouble(3, info.getGordura());
+            ps.setDouble(4, info.getCarboidrato());
+            ps.setDouble(5, info.getCalorias());
             ps.setString(6, alimento.getUnidadeMedida().name());
 
             ps.executeUpdate();
@@ -93,11 +96,13 @@ public class AlimentoDao {
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
 
+            InformacaoNutricional info = alimento.getInfoNutricional();
+
             ps.setString(1, alimento.getNome());
-            ps.setDouble(2, alimento.getProteina());
-            ps.setDouble(3, alimento.getGordura());
-            ps.setDouble(4, alimento.getCarboidrato());
-            ps.setDouble(5, alimento.getCalorias());
+            ps.setDouble(2, info.getProteina());
+            ps.setDouble(3, info.getGordura());
+            ps.setDouble(4, info.getCarboidrato());
+            ps.setDouble(5, info.getCalorias());
             ps.setString(6, alimento.getUnidadeMedida().name());
 
             ps.setLong(7, alimento.getId());
@@ -123,12 +128,16 @@ public class AlimentoDao {
     private Alimento mapearAlimento(ResultSet rs) throws SQLException {
         Long id = rs.getLong("id_alimento");
         String nome =  rs.getString("nome");
-        double proteina = rs.getDouble("proteina");
-        double carboidrato = rs.getDouble("carboidrato");
-        double gordura = rs.getDouble("gordura");
-        double calorias = rs.getDouble("calorias");
+
+        InformacaoNutricional info = new InformacaoNutricional(
+                rs.getDouble("calorias"),
+                rs.getDouble("proteina"),
+                rs.getDouble("carboidrato"),
+                rs.getDouble("gordura")
+        );
+
         UnidadeMedida unidadeMedida = UnidadeMedida.valueOf(rs.getString("unidade_medida"));
 
-        return new Alimento(id, nome, proteina, gordura, carboidrato, calorias, unidadeMedida);
+        return new Alimento(id, nome, info, unidadeMedida);
     }
 }

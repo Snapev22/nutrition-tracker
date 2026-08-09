@@ -1,7 +1,8 @@
 package br.edu.ifsp.controller;
 
 import br.edu.ifsp.model.Aluno;
-import br.edu.ifsp.model.PlanoDiario;
+import br.edu.ifsp.model.InformacaoNutricional;
+import br.edu.ifsp.model.PlanoDiario;   
 import br.edu.ifsp.service.AlunoService;
 import br.edu.ifsp.service.PlanoDiarioService;
 
@@ -14,7 +15,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.util.StringConverter;
 
 import java.time.LocalDate;
 
@@ -27,6 +27,9 @@ public class DashboardController {
     @FXML private Label lblMetaDashboard;
     @FXML private Label lblConsumidoDashboard;
     @FXML private Label lblRestanteDashboard;
+    @FXML private Label lblProteinaDashboard;
+    @FXML private Label lblCarboidratoDashboard;
+    @FXML private Label lblGorduraDashboard;
 
     @FXML private ProgressBar progressBarConsumo;
     @FXML private Label lblPercentual;
@@ -55,14 +58,17 @@ public class DashboardController {
         PlanoDiario plano = planoDiarioService.buscarOuCriarPlanoDoDia(alunoSelecionado, data);
 
         double meta = alunoSelecionado.getMetaCalorias();
-        double consumido = planoDiarioService.calcularTotalConsumido(plano);
-        double restante = meta - consumido;
+        InformacaoNutricional resumo = planoDiarioService.calcularResumoNutricional(plano);
+        double restante = meta - resumo.getCalorias();
 
         lblMetaDashboard.setText(String.format("Meta diária: %.2f kcal", meta));
-        lblConsumidoDashboard.setText(String.format("Consumido: %.2f kcal", consumido));
+        lblConsumidoDashboard.setText(String.format("Consumido: %.2f kcal", resumo.getCalorias()));
         lblRestanteDashboard.setText(String.format("Restante: %.2f kcal", restante));
+        lblProteinaDashboard.setText(String.format("Proteína: %.1f g", resumo.getProteina()));
+        lblCarboidratoDashboard.setText(String.format("Carboidrato: %.1f g", resumo.getCarboidrato()));
+        lblGorduraDashboard.setText(String.format("Gordura: %.1f g", resumo.getGordura()));
 
-        double percentual = (meta == 0) ? 0 : consumido / meta;
+        double percentual = (meta == 0) ? 0 : resumo.getCalorias() / meta;
 
         progressBarConsumo.setProgress(Math.min(percentual, 1.0));
         lblPercentual.setText(String.format("%.0f%% da meta utilizada", percentual * 100));

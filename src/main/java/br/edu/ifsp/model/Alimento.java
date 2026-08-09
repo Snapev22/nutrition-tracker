@@ -13,10 +13,7 @@ public class Alimento {
     private Long id;
 
     private String nome;
-    private double proteina;
-    private double gordura;
-    private double carboidrato;
-    private double calorias;
+    private InformacaoNutricional infoNutricional;
     private UnidadeMedida unidadeMedida;
 
 }

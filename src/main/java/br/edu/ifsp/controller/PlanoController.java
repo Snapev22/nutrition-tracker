@@ -1,16 +1,12 @@
 package br.edu.ifsp.controller;
 
-import br.edu.ifsp.exceptions.EntidadeNaoEncontradaException;
-import br.edu.ifsp.exceptions.LimiteCaloricoExcedidoException;
-import br.edu.ifsp.model.Alimento;
-import br.edu.ifsp.model.Aluno;
-import br.edu.ifsp.model.ItemPlano;
-import br.edu.ifsp.model.PlanoDiario;
+import br.edu.ifsp.model.*;
 import br.edu.ifsp.service.AlimentoService;
 import br.edu.ifsp.service.AlunoService;
 import br.edu.ifsp.service.PlanoDiarioService;
 
 import br.edu.ifsp.util.ConverterUtils;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
@@ -24,7 +20,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.StringConverter;
 
 import java.time.LocalDate;
 
@@ -37,6 +32,9 @@ public class PlanoController {
     @FXML private Label lblMeta;
     @FXML private Label lblConsumido;
     @FXML private Label lblRestante;
+    @FXML private Label lblProteina;
+    @FXML private Label lblCarboidrato;
+    @FXML private Label lblGordura;
 
     @FXML private ComboBox<Alimento> cbAlimento;
     @FXML private TextField tfQuantidade;
@@ -46,6 +44,9 @@ public class PlanoController {
     @FXML private TableColumn<ItemPlano, String> colAlimentoNome;
     @FXML private TableColumn<ItemPlano, Double> colQuantidade;
     @FXML private TableColumn<ItemPlano, Double> colCaloriasTotais;
+    @FXML private TableColumn<ItemPlano, Double> colProteina;
+    @FXML private TableColumn<ItemPlano, Double> colCarboidrato;
+    @FXML private TableColumn<ItemPlano, Double> colGordura;
 
     @FXML private Button btnRemoverItem;
 
@@ -69,6 +70,12 @@ public class PlanoController {
         colCaloriasTotais.setCellValueFactory(new PropertyValueFactory<>("caloriasTotais"));
         colAlimentoNome.setCellValueFactory(cellData ->
                 new ReadOnlyStringWrapper(cellData.getValue().getAlimento().getNome()));
+        colProteina.setCellValueFactory(cellData ->
+                new ReadOnlyObjectWrapper<>(cellData.getValue().getTotalNutricional().getProteina()));
+        colCarboidrato.setCellValueFactory(cellData ->
+                new ReadOnlyObjectWrapper<>(cellData.getValue().getTotalNutricional().getCarboidrato()));
+        colGordura.setCellValueFactory(cellData ->
+                new ReadOnlyObjectWrapper<>(cellData.getValue().getTotalNutricional().getGordura()));
     }
 
     @FXML
@@ -90,12 +97,15 @@ public class PlanoController {
 
     private void atualizarResumo() {
         double meta = planoAtual.getAluno().getMetaCalorias();
-        double consumido = planoDiarioService.calcularTotalConsumido(planoAtual);
-        double restante = meta - consumido;
+        InformacaoNutricional resumo = planoDiarioService.calcularResumoNutricional(planoAtual);
+        double restante = meta - resumo.getCalorias();
 
         lblMeta.setText(String.format("Meta: %.2f kcal", meta));
-        lblConsumido.setText(String.format("Consumido: %.2f kcal", consumido));
+        lblConsumido.setText(String.format("Planejado: %.2f kcal", resumo.getCalorias()));
         lblRestante.setText(String.format("Restante: %.2f kcal", restante));
+        lblProteina.setText(String.format("Proteína: %.1f g", resumo.getProteina()));
+        lblCarboidrato.setText(String.format("Carboidrato: %.1f g", resumo.getCarboidrato()));
+        lblGordura.setText(String.format("Gordura: %.1f g", resumo.getGordura()));
     }
 
     @FXML

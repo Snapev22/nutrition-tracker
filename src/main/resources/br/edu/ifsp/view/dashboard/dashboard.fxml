@@ -40,9 +40,15 @@
 
     <VBox spacing="10.0" alignment="CENTER" styleClass="info-box">
         <Label fx:id="lblMetaDashboard" text="Meta diária: -- kcal" styleClass="info-label"/>
-        <Label fx:id="lblConsumidoDashboard" text="Consumido: -- kcal" styleClass="info-label"/>
+        <Label fx:id="lblConsumidoDashboard" text="Planejado: -- kcal" styleClass="info-label"/>
         <Label fx:id="lblRestanteDashboard" text="Restante: -- kcal" styleClass="info-label"/>
     </VBox>
+
+    <HBox spacing="20.0" alignment="CENTER">
+        <Label fx:id="lblProteinaDashboard" text="Proteína: -- g" styleClass="resumo-label"/>
+        <Label fx:id="lblCarboidratoDashboard" text="Carboidrato: -- g" styleClass="resumo-label"/>
+        <Label fx:id="lblGorduraDashboard" text="Gordura: -- g" styleClass="resumo-label"/>
+    </HBox>
 
     <VBox spacing="8.0" alignment="CENTER" maxWidth="500.0">
         <ProgressBar fx:id="progressBarConsumo" progress="0.0" prefWidth="400.0" prefHeight="20.0"/>

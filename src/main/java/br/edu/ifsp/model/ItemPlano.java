@@ -14,11 +14,15 @@ public class ItemPlano {
 
     private Alimento  alimento;
     private double quantidade ;
-    private double caloriasTotais;
+    private InformacaoNutricional totalNutricional;
 
-    public double calcularCaloriasTotais(){
-        caloriasTotais = calcularValorProporcional(alimento.getCalorias());
-        return caloriasTotais;
+    public InformacaoNutricional calcularTotalNutricional(){
+       double fator = (alimento.getUnidadeMedida() == UnidadeMedida.UNIDADE)
+               ? quantidade
+               :quantidade / 100;
+
+       totalNutricional = alimento.getInfoNutricional().multiplicarPor(fator);
+       return totalNutricional;
     }
 
     private  double calcularValorProporcional(double valorBase){
@@ -26,5 +30,9 @@ public class ItemPlano {
             return quantidade * valorBase;
         }
         return (quantidade / 100) * valorBase;
+    }
+
+    public double getCaloriasTotais() {
+        return totalNutricional == null ? 0 : totalNutricional.getCalorias();
     }
 }

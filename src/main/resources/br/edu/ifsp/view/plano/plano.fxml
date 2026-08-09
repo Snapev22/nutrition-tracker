@@ -49,6 +49,9 @@
         <Label fx:id="lblMeta" text="Meta: -- kcal" styleClass="resumo-label"/>
         <Label fx:id="lblConsumido" text="Consumido: -- kcal" styleClass="resumo-label"/>
         <Label fx:id="lblRestante" text="Restante: -- kcal" styleClass="resumo-label"/>
+        <Label fx:id="lblProteina" text="Proteína: -- g" styleClass="resumo-label"/>
+        <Label fx:id="lblCarboidrato" text="Carboidrato: -- g" styleClass="resumo-label"/>
+        <Label fx:id="lblGordura" text="Gordura: -- g" styleClass="resumo-label"/>
     </HBox>
 
     <!-- Adição de item -->
@@ -67,7 +70,10 @@
         <columns>
             <TableColumn fx:id="colAlimentoNome" text="Alimento" prefWidth="220.0"/>
             <TableColumn fx:id="colQuantidade" text="Quantidade" prefWidth="120.0"/>
-            <TableColumn fx:id="colCaloriasTotais" text="Calorias Totais" prefWidth="140.0"/>
+            <TableColumn fx:id="colCaloriasTotais" text="Calorias" prefWidth="140.0"/>
+            <TableColumn fx:id="colProteina" text="Proteína (g)" prefWidth="100.0"/>
+            <TableColumn fx:id="colCarboidrato" text="Carboidrato (g)" prefWidth="110.0"/>
+            <TableColumn fx:id="colGordura" text="Gordura (g)" prefWidth="100.0"/>
         </columns>
     </TableView>
 

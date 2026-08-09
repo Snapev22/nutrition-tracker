@@ -1,11 +1,13 @@
 package br.edu.ifsp.repository;
 
 import br.edu.ifsp.model.Alimento;
+import br.edu.ifsp.model.InformacaoNutricional;
 import br.edu.ifsp.model.ItemPlano;
+import br.edu.ifsp.model.ResumoNutricional;
+import br.edu.ifsp.model.enums.UnidadeMedida;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ItemPlanoDao {
@@ -19,7 +21,7 @@ public class ItemPlanoDao {
              PreparedStatement ps = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setDouble(1, itemPlano.getQuantidade());
-            ps.setDouble(2, itemPlano.getCaloriasTotais());
+            ps.setDouble(2, itemPlano.getTotalNutricional().getCalorias());
             ps.setLong(3, itemPlano.getAlimento().getId());
             ps.setLong(4, planoId);
 
@@ -40,7 +42,7 @@ public class ItemPlanoDao {
         String sqlQuery = """
                 SELECT ip.id_item_plano, ip.quantidade, ip.calorias_totais,
                 a.id_alimento,
-                a.nome, a.proteina, a.carboidrato, a.gordura, a.calorias
+                a.nome, a.proteina, a.carboidrato, a.gordura, a.calorias, a.unidade_medida
                 FROM item_plano ip
                 INNER JOIN alimento a
                      ON ip.id_alimento = a.id_alimento
@@ -48,27 +50,36 @@ public class ItemPlanoDao {
                 WHERE ip.id_plano_diario = ?
                 """;
         List<ItemPlano> itens = new ArrayList<>();
+
         try(Connection connection = ConnectionFactory.getConnection();
             PreparedStatement ps = connection.prepareStatement(sqlQuery)){
 
             ps.setLong(1, planoId);
             try(ResultSet rs = ps.executeQuery()){
                 while (rs.next()){
-                    Alimento alimento = new Alimento();
 
-                    alimento.setId(rs.getLong("id_alimento"));
-                    alimento.setNome(rs.getString("nome"));
-                    alimento.setProteina(rs.getDouble("proteina"));
-                    alimento.setCarboidrato(rs.getDouble("carboidrato"));
-                    alimento.setGordura(rs.getDouble("gordura"));
-                    alimento.setCalorias(rs.getDouble("calorias"));
+                    InformacaoNutricional info = new InformacaoNutricional(
+                            rs.getDouble("calorias"),
+                            rs.getDouble("proteina"),
+                            rs.getDouble("carboidrato"),
+                            rs.getDouble("gordura")
+                    );
+
+                    UnidadeMedida unidadeMedida = UnidadeMedida.valueOf(rs.getString("unidade_medida"));
+
+                    Alimento alimento = new Alimento(
+                            rs.getLong("id_alimento"),
+                            rs.getString("nome"),
+                            info,
+                            unidadeMedida
+                    );
 
                     ItemPlano itemPlano = new ItemPlano();
 
                     itemPlano.setId(rs.getLong("id_item_plano"));
                     itemPlano.setAlimento(alimento);
                     itemPlano.setQuantidade(rs.getDouble("quantidade"));
-                    itemPlano.setCaloriasTotais(rs.getDouble("calorias_totais"));
+                    itemPlano.calcularTotalNutricional();
 
                     itens.add(itemPlano);
                 }
@@ -79,6 +90,52 @@ public class ItemPlanoDao {
         }
     }
 
+    public InformacaoNutricional somarResumoPorPlano(Long planoId) {
+        String sqlQuery = """
+            SELECT
+                COALESCE(SUM(ip.calorias_totais), 0) AS total_calorias,
+                COALESCE(SUM(
+                    CASE WHEN a.unidade_medida = 'UNIDADE'
+                         THEN ip.quantidade * a.proteina
+                         ELSE (ip.quantidade / 100.0) * a.proteina
+                    END
+                ), 0) AS total_proteina,
+                COALESCE(SUM(
+                    CASE WHEN a.unidade_medida = 'UNIDADE'
+                         THEN ip.quantidade * a.carboidrato
+                         ELSE (ip.quantidade / 100.0) * a.carboidrato
+                    END
+                ), 0) AS total_carboidrato,
+                COALESCE(SUM(
+                    CASE WHEN a.unidade_medida = 'UNIDADE'
+                         THEN ip.quantidade * a.gordura
+                         ELSE (ip.quantidade / 100.0) * a.gordura
+                    END
+                ), 0) AS total_gordura
+            FROM item_plano ip
+            INNER JOIN alimento a ON ip.id_alimento = a.id_alimento
+            WHERE ip.id_plano_diario = ?
+            """;
+
+        try (Connection connection = ConnectionFactory.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
+
+            ps.setLong(1, planoId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new InformacaoNutricional(
+                            rs.getDouble("total_calorias"),
+                            rs.getDouble("total_proteina"),
+                            rs.getDouble("total_carboidrato"),
+                            rs.getDouble("total_gordura")
+                    );
+                }
+            }
+            return InformacaoNutricional.zero();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao somar resumo nutricional do plano. ", e);
+        }
+    }
     public double somarCaloriasPorPlano(Long planoId){
         String sqlQuery = """
                 SELECT COALESCE(SUM(calorias_totais), 0) AS total
