@@ -1,6 +1,7 @@
 package br.edu.ifsp.controller;
 
 import br.edu.ifsp.model.*;
+import br.edu.ifsp.model.enums.UnidadeMedida;
 import br.edu.ifsp.service.AlimentoService;
 import br.edu.ifsp.service.AlunoService;
 import br.edu.ifsp.service.PlanoDiarioService;
@@ -11,15 +12,9 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Callback;
 
 import java.time.LocalDate;
 
@@ -30,7 +25,7 @@ public class PlanoController {
     @FXML private Button btnCarregarPlano;
 
     @FXML private Label lblMeta;
-    @FXML private Label lblConsumido;
+    @FXML private Label lblPlanejado;
     @FXML private Label lblRestante;
     @FXML private Label lblProteina;
     @FXML private Label lblCarboidrato;
@@ -76,6 +71,41 @@ public class PlanoController {
                 new ReadOnlyObjectWrapper<>(cellData.getValue().getTotalNutricional().getCarboidrato()));
         colGordura.setCellValueFactory(cellData ->
                 new ReadOnlyObjectWrapper<>(cellData.getValue().getTotalNutricional().getGordura()));
+
+        colQuantidade.setCellFactory(coluna -> new TableCell<>() {
+            @Override
+            protected void updateItem(Double quantidade, boolean vazio) {
+                super.updateItem(quantidade, vazio);
+                if (vazio || quantidade == null) {
+                    setText(null);
+                } else {
+                    UnidadeMedida unidade = getTableView().getItems().get(getIndex()).getAlimento().getUnidadeMedida();
+                    setText(String.format("%.0f %s", quantidade, abreviarUnidade(unidade)));
+                }
+            }
+        });
+
+        colProteina.setCellFactory(criarCellFactoryFormatada("%.1f"));
+        colCarboidrato.setCellFactory(criarCellFactoryFormatada("%.1f"));
+        colGordura.setCellFactory(criarCellFactoryFormatada("%.1f"));
+    }
+
+    private Callback<TableColumn<ItemPlano, Double>, TableCell<ItemPlano, Double>> criarCellFactoryFormatada(String pattern) {
+        return coluna -> new TableCell<>() {
+            @Override
+            protected void updateItem(Double valor, boolean vazio) {
+                super.updateItem(valor, vazio);
+                setText(vazio || valor == null ? null : String.format(pattern, valor));
+            }
+        };
+    }
+
+    private String abreviarUnidade(UnidadeMedida unidade) {
+        return switch (unidade) {
+            case GRAMAS -> "g";
+            case MILILITROS -> "ml";
+            case UNIDADE -> "un";
+        };
     }
 
     @FXML
@@ -101,7 +131,7 @@ public class PlanoController {
         double restante = meta - resumo.getCalorias();
 
         lblMeta.setText(String.format("Meta: %.2f kcal", meta));
-        lblConsumido.setText(String.format("Planejado: %.2f kcal", resumo.getCalorias()));
+        lblPlanejado.setText(String.format("Planejado: %.2f kcal", resumo.getCalorias()));
         lblRestante.setText(String.format("Restante: %.2f kcal", restante));
         lblProteina.setText(String.format("Proteína: %.1f g", resumo.getProteina()));
         lblCarboidrato.setText(String.format("Carboidrato: %.1f g", resumo.getCarboidrato()));
