@@ -7,6 +7,7 @@ import br.edu.ifsp.repository.PlanoDiarioDao;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class PlanoDiarioService {
     private final PlanoValidacaoService planoValidacao;
@@ -37,14 +38,32 @@ public class PlanoDiarioService {
     }
 
     public void adicionarItem(PlanoDiario plano, Alimento alimento, double quantidade){
-        ItemPlano item = new ItemPlano();
-        item.setAlimento(alimento);
-        item.setQuantidade(quantidade);
-        item.calcularTotalNutricional();
+        Optional<ItemPlano> itemExistente = plano.getItens().stream()
+                .filter(i -> i.getAlimento().getId().equals(alimento.getId()))
+                .findFirst();
 
-        planoValidacao.validarAdicaoItem(plano, item);
-        itemPlanoDao.inserirItem(item, plano.getId());
-        plano.getItens().add(item);
+        if(itemExistente.isPresent()){
+            ItemPlano item = itemExistente.get();
+
+            double novoQuantidade = item.getQuantidade() + quantidade;
+            item.setQuantidade(novoQuantidade);
+            item.calcularTotalNutricional();
+            
+            planoValidacao.validarAdicaoItem(plano, item);
+            itemPlanoDao.atualizarQuantidade(item.getId(), item.getQuantidade(), item.getCaloriasTotais());
+        }else{
+            ItemPlano novoItem = new ItemPlano();
+            novoItem.setAlimento(alimento);
+            novoItem.setQuantidade(quantidade);
+            novoItem.calcularTotalNutricional();
+
+            planoValidacao.validarAdicaoItem(plano, novoItem);
+
+            itemPlanoDao.inserirItem(novoItem, plano.getId());
+
+            plano.getItens().add(novoItem);
+        }
+
     }
 
     public void removerItem(PlanoDiario plano, Long idRemover){

@@ -169,7 +169,7 @@ public class PlanoController {
         };
 
         task.setOnSucceeded(event -> {
-            atualizarTabela();
+            tableItens.refresh();
             atualizarResumo();
             tfQuantidade.clear();
         });

@@ -3,7 +3,6 @@ package br.edu.ifsp.repository;
 import br.edu.ifsp.model.Alimento;
 import br.edu.ifsp.model.InformacaoNutricional;
 import br.edu.ifsp.model.ItemPlano;
-import br.edu.ifsp.model.ResumoNutricional;
 import br.edu.ifsp.model.enums.UnidadeMedida;
 
 import java.sql.*;
@@ -35,6 +34,23 @@ public class ItemPlanoDao {
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao inserir item no banco. ", e);
 
+        }
+    }
+
+    public void atualizarQuantidade(Long idItem, double novaQuantidade, double novasCaloriasTotais) {
+        String sqlQuery = """
+            UPDATE item_plano SET quantidade = ?, calorias_totais = ?
+            WHERE id_item_plano = ?
+            """;
+        try (Connection connection = ConnectionFactory.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
+
+            ps.setDouble(1, novaQuantidade);
+            ps.setDouble(2, novasCaloriasTotais);
+            ps.setLong(3, idItem);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar quantidade do item. ", e);
         }
     }
 
