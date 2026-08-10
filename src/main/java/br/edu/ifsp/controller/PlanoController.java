@@ -1,5 +1,6 @@
 package br.edu.ifsp.controller;
 
+import br.edu.ifsp.exceptions.DataInvalidaException;
 import br.edu.ifsp.model.*;
 import br.edu.ifsp.model.enums.UnidadeMedida;
 import br.edu.ifsp.service.AlimentoService;
@@ -115,10 +116,13 @@ public class PlanoController {
             return;
         }
 
-        planoAtual = planoDiarioService.buscarOuCriarPlanoDoDia(cbAluno.getValue(), dpData.getValue());
-
-        atualizarTabela();
-        atualizarResumo();
+        try{
+            planoAtual = planoDiarioService.buscarOuCriarPlanoDoDia(cbAluno.getValue(), dpData.getValue());
+            atualizarTabela();
+            atualizarResumo()  ;
+        }catch (DataInvalidaException e){
+            mostrarAlerta(Alert.AlertType.WARNING, e.getMessage());
+        }
     }
 
     private void atualizarTabela() {

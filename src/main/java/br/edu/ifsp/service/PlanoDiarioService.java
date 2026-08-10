@@ -1,5 +1,6 @@
 package br.edu.ifsp.service;
 
+import br.edu.ifsp.exceptions.DataInvalidaException;
 import br.edu.ifsp.exceptions.EntidadeNaoEncontradaException;
 import br.edu.ifsp.model.*;
 import br.edu.ifsp.repository.ItemPlanoDao;
@@ -20,7 +21,7 @@ public class PlanoDiarioService {
         this.itemPlanoDao = new ItemPlanoDao();
     }
 
-    public PlanoDiario buscarOuCriarPlanoDoDia(Aluno aluno, LocalDate data){
+    public PlanoDiario buscarOuCriarPlanoDoDia(Aluno aluno, LocalDate data) {
         return planoDiarioDao.buscarPorAlunoEData(aluno.getId(), data)
                 .map(plano -> {
                     plano.setAluno(aluno);
@@ -28,6 +29,11 @@ public class PlanoDiarioService {
                     plano.setItens(itens);
                     return plano;
                 }).orElseGet(() -> {
+                    if (data.isBefore(LocalDate.now())) {
+                        throw new DataInvalidaException(
+                                "Não é possível criar um novo plano para uma data passada (" + data
+                                        + "). Planos antigos só podem ser consultados se já existirem.");
+                    }
                     PlanoDiario novoPlano = new PlanoDiario();
                     novoPlano.setAluno(aluno);
                     novoPlano.setData(data);
@@ -48,7 +54,7 @@ public class PlanoDiarioService {
             double novoQuantidade = item.getQuantidade() + quantidade;
             item.setQuantidade(novoQuantidade);
             item.calcularTotalNutricional();
-            
+
             planoValidacao.validarAdicaoItem(plano, item);
             itemPlanoDao.atualizarQuantidade(item.getId(), item.getQuantidade(), item.getCaloriasTotais());
         }else{
