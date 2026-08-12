@@ -1,6 +1,7 @@
 package br.edu.ifsp.controller;
 
 import br.edu.ifsp.exceptions.DataInvalidaException;
+import br.edu.ifsp.exceptions.MetaCaloricaExcedidaException;
 import br.edu.ifsp.model.*;
 import br.edu.ifsp.model.enums.UnidadeMedida;
 import br.edu.ifsp.service.AlimentoService;
@@ -130,7 +131,7 @@ public class PlanoController {
     }
 
     private void atualizarResumo() {
-        double meta = planoAtual.getAluno().getMetaCalorias();
+        double meta = planoAtual.getAluno().getMetaCaloricaEstimada();
         InformacaoNutricional resumo = planoDiarioService.calcularResumoNutricional(planoAtual);
         double restante = meta - resumo.getCalorias();
 
@@ -164,10 +165,16 @@ public class PlanoController {
 
         Alimento alimentoSelecionado = cbAlimento.getValue();
 
+        executarAdicaoItem(alimentoSelecionado, quantidade, false);
+
+
+    }
+
+    private void executarAdicaoItem(Alimento alimento, double quantidade, boolean ignorarLimite){
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() {
-                planoDiarioService.adicionarItem(planoAtual, alimentoSelecionado, quantidade);
+                planoDiarioService.adicionarItem(planoAtual, alimento, quantidade);
                 return null;
             }
         };
@@ -180,7 +187,19 @@ public class PlanoController {
 
         task.setOnFailed(event -> {
             Throwable erro = task.getException();
-            mostrarAlerta(Alert.AlertType.WARNING, erro.getMessage());
+
+            if (erro instanceof MetaCaloricaExcedidaException && !ignorarLimite) {
+                Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION,
+                        erro.getMessage() + "\n\nDeseja adicionar mesmo assim?");
+                confirmacao.setHeaderText("Meta calórica definida foi atingida");
+                confirmacao.showAndWait().ifPresent(botao -> {
+                    if (botao == ButtonType.OK) {
+                        executarAdicaoItem(alimento, quantidade, true);
+                    }
+                });
+            }else{
+                mostrarAlerta(Alert.AlertType.WARNING, erro.getMessage());
+            }
         });
 
         new Thread(task).start();

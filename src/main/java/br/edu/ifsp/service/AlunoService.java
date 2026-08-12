@@ -5,7 +5,6 @@ import br.edu.ifsp.exceptions.RegraDeNegocioException;
 import br.edu.ifsp.model.Aluno;
 import br.edu.ifsp.repository.AlunoDao;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class AlunoService {
@@ -20,8 +19,12 @@ public class AlunoService {
     public void cadastrar(Aluno novoAluno) {
         if(novoAluno == null){throw new RegraDeNegocioException("O aluno cadastrado não pode ser nulo");}
 
-        double metaCalorica =  calculoNutricaoService.calculaMetaCalorica(novoAluno);
-        novoAluno.setMetaCalorias(metaCalorica);
+        double metaCaloricaEstimada =  calculoNutricaoService.calculaMetaCalorica(novoAluno);
+        novoAluno.setMetaCaloricaEstimada(metaCaloricaEstimada);
+
+        if(novoAluno.getMetaCaloricaDefinida() <=0){
+            novoAluno.setMetaCaloricaDefinida(metaCaloricaEstimada);
+        }
 
         alunoDao.inserir(novoAluno);
     }
@@ -39,8 +42,9 @@ public class AlunoService {
     public void alter(Aluno alunoAlterar) {
        if(alunoAlterar == null){throw new RegraDeNegocioException("O aluno pra alterar não pode ser nulo");}
 
-        double metaCalorica = calculoNutricaoService.calculaMetaCalorica(alunoAlterar);
-        alunoAlterar.setMetaCalorias(metaCalorica);
+        double metaCaloricaEstimada = calculoNutricaoService.calculaMetaCalorica(alunoAlterar);
+        alunoAlterar.setMetaCaloricaEstimada(metaCaloricaEstimada);
+
         int linhasAfetadas = alunoDao.alterar(alunoAlterar);
 
         if(linhasAfetadas == 0){

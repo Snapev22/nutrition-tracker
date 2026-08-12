@@ -21,6 +21,6 @@ public class Aluno {
     private Sexo sexo;
     private FatorAtividade fatorAtividade;
     private Objetivo objetivo;
-    private double metaCalorias;
-
+    private double metaCaloricaEstimada;
+    private double metaCaloricaDefinida;
 }

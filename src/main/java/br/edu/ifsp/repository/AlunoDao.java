@@ -15,8 +15,8 @@ public class AlunoDao {
 
     public void inserir(Aluno aluno)  {
         String sqlQuery = """
-                INSERT INTO aluno (nome, idade, peso, altura, sexo, fator_atividade, objetivo, meta_calorica)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO aluno (nome, idade, peso, altura, sexo, fator_atividade, objetivo, meta_calorica_estimada, meta_calorica_definida)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 				""";
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement ps = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS)) {
@@ -28,7 +28,8 @@ public class AlunoDao {
             ps.setString(5, aluno.getSexo().name());
             ps.setString(6, aluno.getFatorAtividade().name());
             ps.setString(7, aluno.getObjetivo().name());
-            ps.setDouble(8, aluno.getMetaCalorias());
+            ps.setDouble(8, aluno.getMetaCaloricaEstimada());
+            ps.setDouble(9, aluno.getMetaCaloricaDefinida());
 
             ps.executeUpdate();
 
@@ -45,7 +46,7 @@ public class AlunoDao {
     public Optional<Aluno> buscarPorId(Long id) {
         String sqlQuery ="""
                 SELECT idaluno, nome, idade, peso, altura, sexo, fator_atividade, objetivo,
-                meta_calorica
+                meta_calorica_estimada, meta_calorica_definida
 				FROM aluno
 				WHERE idaluno = ?
 				""";
@@ -67,8 +68,8 @@ public class AlunoDao {
      public List<Aluno> listarTodos() {
          String sqlQuery = """
                 SELECT idaluno, nome, idade, peso, altura, sexo, fator_atividade, objetivo,
-                meta_calorica
-				 FROM aluno
+                meta_calorica_estimada, meta_calorica_definida
+				FROM aluno
                  """;
 
          List<Aluno> cadastrados = new ArrayList<>();
@@ -92,7 +93,7 @@ public class AlunoDao {
         String sqlQuery = """
                 UPDATE aluno
 				SET nome = ?, idade = ?, peso = ?, altura = ?, sexo = ?, fator_atividade = ?, 
-				    objetivo = ?, meta_calorica = ?
+				    objetivo = ?, meta_calorica_estimada = ?, meta_calorica_definida = ?
 				WHERE idaluno = ?
 				""";
         try (Connection connection = ConnectionFactory.getConnection();
@@ -105,9 +106,10 @@ public class AlunoDao {
             ps.setString(5, aluno.getSexo().name());
             ps.setString(6, aluno.getFatorAtividade().name());
             ps.setString(7, aluno.getObjetivo().name());
-            ps.setDouble(8, aluno.getMetaCalorias());
+            ps.setDouble(8, aluno.getMetaCaloricaEstimada());
+            ps.setDouble(9, aluno.getMetaCaloricaDefinida());
 
-            ps.setLong(9, aluno.getId());
+            ps.setLong(10, aluno.getId());
             return ps.executeUpdate();
         }catch (SQLException e){
             throw  new RuntimeException("Erro ao alterar cadastro de aluno. ", e);
@@ -136,12 +138,13 @@ public class AlunoDao {
          String sexo = rs.getString("sexo");
          String fator_atividade = rs.getString("fator_atividade");
          String objetivo = rs.getString("objetivo");
-         double meta_calorica = rs.getDouble("meta_calorica");
+         double meta_calorica_estimada = rs.getDouble("meta_calorica_estimada");
+         double meta_calorica_definida = rs.getDouble("meta_calorica_definida");
 
         return  new Aluno(
                 id, nome, idade, peso, altura,
                 Sexo.valueOf(sexo), FatorAtividade.valueOf(fator_atividade),
                 Objetivo.valueOf(objetivo),
-                meta_calorica );
+                meta_calorica_estimada, meta_calorica_definida);
      }
 }

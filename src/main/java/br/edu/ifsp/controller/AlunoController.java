@@ -1,7 +1,5 @@
     package br.edu.ifsp.controller;
 
-    import br.edu.ifsp.exceptions.EntidadeNaoEncontradaException;
-    import br.edu.ifsp.exceptions.RegraDeNegocioException;
     import br.edu.ifsp.model.Aluno;
     import br.edu.ifsp.model.enums.FatorAtividade;
     import br.edu.ifsp.model.enums.Objetivo;
@@ -21,7 +19,6 @@
     import javafx.scene.control.TableView;
     import javafx.scene.control.TextField;
     import javafx.scene.control.cell.PropertyValueFactory;
-    import javafx.util.StringConverter;
 
     import java.util.List;
 
@@ -31,12 +28,13 @@
         @FXML private TextField tfIdade;
         @FXML private TextField tfPeso;
         @FXML private TextField tfAltura;
+        @FXML private TextField tfMetaCaloricaDefinida;
 
         @FXML private ComboBox<Sexo> cbSexo;
         @FXML private ComboBox<FatorAtividade> cbFatorAtividade;
         @FXML private ComboBox<Objetivo> cbObjetivo;
 
-        @FXML private Label lblMetaCalorica;
+        @FXML private Label lblMetaCaloricaEstimada;
 
         @FXML private Button btnSalvar;
         @FXML private Button btnLimpar;
@@ -49,7 +47,8 @@
         @FXML private TableColumn<Aluno, Double> colAltura;
         @FXML private TableColumn<Aluno, Sexo> colSexo;
         @FXML private TableColumn<Aluno, Objetivo> colObjetivo;
-        @FXML private TableColumn<Aluno, Double> colMetaCalorica;
+        @FXML private TableColumn<Aluno, Double> colMetaCaloricaEstimada;
+        @FXML private TableColumn<Aluno, Double> colMetaDefinida;
 
         private final AlunoService alunoService = new AlunoService();
 
@@ -109,7 +108,8 @@
             colAltura.setCellValueFactory(new PropertyValueFactory<>("altura"));
             colSexo.setCellValueFactory(new PropertyValueFactory<>("sexo"));
             colObjetivo.setCellValueFactory(new PropertyValueFactory<>("objetivo"));
-            colMetaCalorica.setCellValueFactory(new PropertyValueFactory<>("metaCalorias"));
+            colMetaCaloricaEstimada.setCellValueFactory(new PropertyValueFactory<>("metaCaloricaEstimada"));
+            colMetaDefinida.setCellValueFactory(new PropertyValueFactory<>("metaCaloricaDefinida"));
         }
 
         private void carregarTabela() {
@@ -142,7 +142,8 @@
             cbFatorAtividade.setValue(aluno.getFatorAtividade());
             cbObjetivo.setValue(aluno.getObjetivo());
 
-            lblMetaCalorica.setText(String.format("Meta: %.2f kcal", aluno.getMetaCalorias()));
+            lblMetaCaloricaEstimada.setText(String.format("Meta Estimada (TMB): %.2f kcal", aluno.getMetaCaloricaEstimada()));
+            tfMetaCaloricaDefinida.setText(String.format("%.2f", aluno.getMetaCaloricaDefinida()));
 
             alunoSelecionado = aluno;
         }
@@ -183,6 +184,15 @@
             alunoParaSalvar.setFatorAtividade(cbFatorAtividade.getValue());
             alunoParaSalvar.setObjetivo(cbObjetivo.getValue());
 
+            if (!tfMetaCaloricaDefinida.getText().isBlank()) {
+                try {
+                    alunoParaSalvar.setMetaCaloricaDefinida(Double.parseDouble(tfMetaCaloricaDefinida.getText()));
+                } catch (NumberFormatException e) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Meta calórica definida inválida");
+                    return;
+                }
+            }
+
            Task<Void> task = new Task<>() {
                @Override
                protected Void call() {
@@ -196,7 +206,8 @@
            };
 
            task.setOnSucceeded(event -> {
-               lblMetaCalorica.setText(String.format("Meta: %.2f kcal", alunoParaSalvar.getMetaCalorias()));
+               lblMetaCaloricaEstimada.setText(String.format("Estimada (TMB): %.2f kcal", alunoParaSalvar.getMetaCaloricaEstimada()));
+               tfMetaCaloricaDefinida.setText(String.format("%.2f", alunoParaSalvar.getMetaCaloricaDefinida()));
                carregarTabela();
                limparFormulario();
             });
@@ -224,7 +235,8 @@
             cbFatorAtividade.setValue(null);
             cbObjetivo.setValue(null);
 
-            lblMetaCalorica.setText("Meta: -- kcal");
+            lblMetaCaloricaEstimada.setText("Meta Estimada (TMB): -- kcal");
+            tfMetaCaloricaDefinida.clear();
 
             alunoSelecionado = null;
             tableAlunos.getSelectionModel().clearSelection();

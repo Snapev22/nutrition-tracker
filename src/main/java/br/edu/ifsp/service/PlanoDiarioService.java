@@ -43,33 +43,36 @@ public class PlanoDiarioService {
                 });
     }
 
-    public void adicionarItem(PlanoDiario plano, Alimento alimento, double quantidade){
+    public void adicionarItem(PlanoDiario plano, Alimento alimento, double quantidadeAdcional,   boolean ignorarLimiteCalorico){
+        ItemPlano itemParaValidar = new ItemPlano();
+        itemParaValidar.setAlimento(alimento);
+        itemParaValidar.setQuantidade(quantidadeAdcional);
+        itemParaValidar.calcularTotalNutricional();
+
+        if (!ignorarLimiteCalorico) {
+            planoValidacao.validarAdicaoItem(plano, itemParaValidar);
+        }
+
+
         Optional<ItemPlano> itemExistente = plano.getItens().stream()
                 .filter(i -> i.getAlimento().getId().equals(alimento.getId()))
                 .findFirst();
 
         if(itemExistente.isPresent()){
             ItemPlano item = itemExistente.get();
-
-            double novoQuantidade = item.getQuantidade() + quantidade;
-            item.setQuantidade(novoQuantidade);
+            item.setQuantidade(item.getQuantidade() + quantidadeAdcional);
             item.calcularTotalNutricional();
-
-            planoValidacao.validarAdicaoItem(plano, item);
             itemPlanoDao.atualizarQuantidade(item.getId(), item.getQuantidade(), item.getCaloriasTotais());
         }else{
-            ItemPlano novoItem = new ItemPlano();
-            novoItem.setAlimento(alimento);
-            novoItem.setQuantidade(quantidade);
-            novoItem.calcularTotalNutricional();
-
-            planoValidacao.validarAdicaoItem(plano, novoItem);
-
-            itemPlanoDao.inserirItem(novoItem, plano.getId());
-
-            plano.getItens().add(novoItem);
+            itemPlanoDao.inserirItem(itemParaValidar, plano.getId());
+            plano.getItens().add(itemParaValidar);
         }
 
+    }
+    // Overload — mantém a assinatura antiga funcionando (chamadas existentes não quebram),
+    // sempre validando (comportamento padrão = não ignora o limite).
+    public void adicionarItem(PlanoDiario plano, Alimento alimento, double quantidadeAdicional) {
+        adicionarItem(plano, alimento, quantidadeAdicional, false);
     }
 
     public void removerItem(PlanoDiario plano, Long idRemover){
