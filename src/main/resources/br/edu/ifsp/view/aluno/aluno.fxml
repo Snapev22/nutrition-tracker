@@ -54,7 +54,8 @@
                 <ComboBox fx:id="cbObjetivo" GridPane.rowIndex="6" GridPane.columnIndex="1" prefWidth="180.0"/>
             </GridPane>
 
-            <Label fx:id="lblMetaCalorica" text="Meta: -- kcal" styleClass="meta-calorica"/>
+            <Label fx:id="lblMetaCaloricaEstimada" text="Meta Estimada (TMB): -- kcal" styleClass="meta-calorica"/>
+            <TextField fx:id="tfMetaCaloricaDefinida" promptText="Meta definida (kcal) — em branco usa a estimativa"/>
 
             <HBox spacing="10.0">
                 <Button fx:id="btnSalvar" text="Salvar" styleClass="botao-primario" onAction="#onSalvar"/>
@@ -79,7 +80,8 @@
                     <TableColumn fx:id="colAltura" text="Altura" prefWidth="70.0"/>
                     <TableColumn fx:id="colSexo" text="Sexo" prefWidth="90.0"/>
                     <TableColumn fx:id="colObjetivo" text="Objetivo" prefWidth="110.0"/>
-                    <TableColumn fx:id="colMetaCalorica" text="Meta Calórica" prefWidth="100.0"/>
+                    <TableColumn fx:id="colMetaCaloricaEstimada" text="Meta Estimada (TMB)" prefWidth="130.0"/>
+                    <TableColumn fx:id="colMetaDefinida" text="Meta Definida" prefWidth="110.0"/>
                 </columns>
             </TableView>
         </VBox>
