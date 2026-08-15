@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface PlanoDiarioRepository extends JpaRepository<PlanoDiario, Long> {
 
 
-    Optional<PlanoDiario> findByAlunoAndData(Long alunoID, LocalDate data);
+    Optional<PlanoDiario> findByAlunoIdAndData(Long alunoID, LocalDate data);
 }

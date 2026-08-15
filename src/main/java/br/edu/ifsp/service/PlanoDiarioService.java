@@ -22,7 +22,7 @@ public class PlanoDiarioService {
     private final ItemPlanoRepository itemPlanoRepository;
 
     public PlanoDiario buscarOuCriarPlanoDoDia(Aluno aluno, LocalDate data) {
-        return planoDiarioRepository.findByAlunoAndData(aluno.getId(), data)
+        return planoDiarioRepository.findByAlunoIdAndData(aluno.getId(), data)
                 .orElseGet(() -> {
                     if (data.isBefore(LocalDate.now())) {
                         throw new DataInvalidaException(
