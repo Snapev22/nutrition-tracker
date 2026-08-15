@@ -3,17 +3,24 @@ package br.edu.ifsp.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
 
 import org.slf4j.Logger;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 @Component
+@RequiredArgsConstructor
 public class MainController {
 
+    private final ApplicationContext applicationContext;
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
     @FXML
@@ -59,6 +66,7 @@ public class MainController {
     private void carregarTela(String caminhoFxml) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(caminhoFxml));
+            loader.setControllerFactory(applicationContext::getBean);
             Node tela = loader.load();
             paneCentral.getChildren().setAll(tela);
         } catch (Exception e) {
