@@ -3,9 +3,11 @@ package br.edu.ifsp.service;
 import br.edu.ifsp.exceptions.MetaCaloricaExcedidaException;
 import br.edu.ifsp.model.ItemPlano;
 import br.edu.ifsp.model.PlanoDiario;
+import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 
+@Service
 public class PlanoValidacaoService {
 
     public void validarAdicaoItem(PlanoDiario plano, ItemPlano novoItem){

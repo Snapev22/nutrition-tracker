@@ -2,9 +2,11 @@ package br.edu.ifsp.util;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Component
 public class DialogoUtils {
     public static boolean confirmarExclusao(String nomeEntidade){
         Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION,

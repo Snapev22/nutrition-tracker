@@ -2,7 +2,9 @@ package br.edu.ifsp.service;
 
 import br.edu.ifsp.model.Aluno;
 import br.edu.ifsp.model.enums.Sexo;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CalculoNutricaoService {
 
     public double calculartmb(Aluno aluno){

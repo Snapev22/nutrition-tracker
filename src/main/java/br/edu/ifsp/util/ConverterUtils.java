@@ -1,9 +1,11 @@
 package br.edu.ifsp.util;
 
 import javafx.util.StringConverter;
+import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
 
+@Component
 public class ConverterUtils {
     private ConverterUtils() {
     }
