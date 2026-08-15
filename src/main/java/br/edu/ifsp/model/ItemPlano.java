@@ -1,6 +1,7 @@
 package br.edu.ifsp.model;
 
 import br.edu.ifsp.model.enums.UnidadeMedida;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
@@ -8,12 +9,27 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+
+@Entity
+@Table(name = "item_plano")
 public class ItemPlano {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_item_plano")
     @EqualsAndHashCode.Include
     private Long id;
-
-    private Alimento  alimento;
     private double quantidade ;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_alimento", nullable = false)
+    private Alimento  alimento;
+
+    @ManyToOne(fetch =  FetchType.LAZY)
+    @JoinColumn(name = "id_plano_diario")
+    private PlanoDiario planoDiario;
+
+    @Embedded
     private InformacaoNutricional totalNutricional;
 
     public InformacaoNutricional calcularTotalNutricional(){

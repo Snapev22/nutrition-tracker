@@ -1,15 +1,18 @@
 package br.edu.ifsp.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import jakarta.persistence.Embeddable;
+import lombok.*;
 
 @Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Embeddable
 public class InformacaoNutricional {
-    private final double calorias;
-    private final double proteina;
-    private final double carboidrato;
-    private final double gordura;
+    private  double calorias;
+    private  double proteina;
+    private  double carboidrato;
+    private  double gordura;
 
     public InformacaoNutricional multiplicarPor(double fator) {
         if (Double.isNaN(fator) || Double.isInfinite(fator) || fator < 0) {
