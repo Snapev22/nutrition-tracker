@@ -9,8 +9,9 @@ import javafx.scene.layout.StackPane;
 import org.slf4j.LoggerFactory;
 
 import org.slf4j.Logger;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class MainController {
 
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
