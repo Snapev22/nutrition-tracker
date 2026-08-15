@@ -2,7 +2,7 @@ package br.edu.ifsp.controller;
 
 import br.edu.ifsp.model.Aluno;
 import br.edu.ifsp.model.InformacaoNutricional;
-import br.edu.ifsp.model.PlanoDiario;   
+import br.edu.ifsp.model.PlanoDiario;
 import br.edu.ifsp.service.AlunoService;
 import br.edu.ifsp.service.PlanoDiarioService;
 
@@ -15,9 +15,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
+@Component
+@RequiredArgsConstructor
 public class DashboardController {
 
     @FXML private ComboBox<Aluno> cbAlunoDashboard;
@@ -34,8 +38,8 @@ public class DashboardController {
     @FXML private ProgressBar progressBarConsumo;
     @FXML private Label lblPercentual;
 
-    private final AlunoService alunoService = new AlunoService();
-    private final PlanoDiarioService planoDiarioService = new PlanoDiarioService();
+    private final AlunoService alunoService;
+    private final PlanoDiarioService planoDiarioService;
 
     @FXML
     public void initialize() {
@@ -57,12 +61,12 @@ public class DashboardController {
 
         PlanoDiario plano = planoDiarioService.buscarOuCriarPlanoDoDia(alunoSelecionado, data);
 
-        double meta = alunoSelecionado.getMetaCalorias();
+        double meta = alunoSelecionado.getMetaCaloricaDefinida();
         InformacaoNutricional resumo = planoDiarioService.calcularResumoNutricional(plano);
         double restante = meta - resumo.getCalorias();
 
-        lblMetaDashboard.setText(String.format("Meta diária: %.2f kcal", meta));
-        lblConsumidoDashboard.setText(String.format("Consumido: %.2f kcal", resumo.getCalorias()));
+        lblMetaDashboard.setText(String.format("Meta Definida: %.2f kcal", meta));
+        lblConsumidoDashboard.setText(String.format("Adcionado: %.2f kcal", resumo.getCalorias()));
         lblRestanteDashboard.setText(String.format("Restante: %.2f kcal", restante));
         lblProteinaDashboard.setText(String.format("Proteína: %.1f g", resumo.getProteina()));
         lblCarboidratoDashboard.setText(String.format("Carboidrato: %.1f g", resumo.getCarboidrato()));

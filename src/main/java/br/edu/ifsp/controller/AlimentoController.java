@@ -12,8 +12,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 
+@Component
+@RequiredArgsConstructor
 public class AlimentoController {
 
     @FXML private TextField tfNome;
@@ -35,8 +40,8 @@ public class AlimentoController {
     @FXML private TableColumn<Alimento, Double> colCalorias;
     @FXML private TableColumn<Alimento, UnidadeMedida> colUnidadeMedida;
 
-    private final AlimentoService alimentoService = new AlimentoService();
-    private Alimento alimentoSelecionado = null;
+    private final AlimentoService alimentoService;
+    private Alimento alimentoSelecionado;
 
     @FXML
     public void initialize() {

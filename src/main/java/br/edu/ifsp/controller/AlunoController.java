@@ -19,9 +19,13 @@
     import javafx.scene.control.TableView;
     import javafx.scene.control.TextField;
     import javafx.scene.control.cell.PropertyValueFactory;
+    import lombok.RequiredArgsConstructor;
+    import org.springframework.stereotype.Component;
 
     import java.util.List;
 
+    @Component
+    @RequiredArgsConstructor
     public class AlunoController {
 
         @FXML private TextField tfNome;
@@ -50,7 +54,7 @@
         @FXML private TableColumn<Aluno, Double> colMetaCaloricaEstimada;
         @FXML private TableColumn<Aluno, Double> colMetaDefinida;
 
-        private final AlunoService alunoService = new AlunoService();
+        private final AlunoService alunoService;
 
         private Aluno alunoSelecionado = null;
 

@@ -17,9 +17,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
+@Component
+@RequiredArgsConstructor
 public class PlanoController {
 
     @FXML private ComboBox<Aluno> cbAluno;
@@ -47,9 +51,9 @@ public class PlanoController {
 
     @FXML private Button btnRemoverItem;
 
-    private final AlunoService alunoService = new AlunoService();
-    private final AlimentoService alimentoService = new AlimentoService();
-    private final PlanoDiarioService planoDiarioService = new PlanoDiarioService();
+    private final AlunoService alunoService;
+    private final AlimentoService alimentoService;
+    private final PlanoDiarioService planoDiarioService;
 
     private PlanoDiario planoAtual = null;
 
