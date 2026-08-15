@@ -3,15 +3,12 @@ package br.edu.ifsp.service;
 import br.edu.ifsp.exceptions.DataInvalidaException;
 import br.edu.ifsp.exceptions.EntidadeNaoEncontradaException;
 import br.edu.ifsp.model.*;
-import br.edu.ifsp.repository.ItemPlanoDao;
 import br.edu.ifsp.repository.ItemPlanoRepository;
-import br.edu.ifsp.repository.PlanoDiarioDao;
 import br.edu.ifsp.repository.PlanoDiarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -22,7 +19,7 @@ public class PlanoDiarioService {
     private final ItemPlanoRepository itemPlanoRepository;
 
     public PlanoDiario buscarOuCriarPlanoDoDia(Aluno aluno, LocalDate data) {
-        return planoDiarioRepository.findByAlunoIdAndData(aluno.getId(), data)
+        return planoDiarioRepository.findByAlunoIdAndDataComItens(aluno.getId(), data)
                 .orElseGet(() -> {
                     if (data.isBefore(LocalDate.now())) {
                         throw new DataInvalidaException(
