@@ -4,31 +4,26 @@ import br.edu.ifsp.exceptions.DataInvalidaException;
 import br.edu.ifsp.exceptions.EntidadeNaoEncontradaException;
 import br.edu.ifsp.model.*;
 import br.edu.ifsp.repository.ItemPlanoDao;
+import br.edu.ifsp.repository.ItemPlanoRepository;
 import br.edu.ifsp.repository.PlanoDiarioDao;
+import br.edu.ifsp.repository.PlanoDiarioRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 
+@Service
+@RequiredArgsConstructor
 public class PlanoDiarioService {
     private final PlanoValidacaoService planoValidacao;
-    private final PlanoDiarioDao planoDiarioDao;
-    private final ItemPlanoDao itemPlanoDao;
-
-    public PlanoDiarioService() {
-        this.planoValidacao = new PlanoValidacaoService();
-        this.planoDiarioDao = new PlanoDiarioDao();
-        this.itemPlanoDao = new ItemPlanoDao();
-    }
+    private final PlanoDiarioRepository planoDiarioRepository;
+    private final ItemPlanoRepository itemPlanoRepository;
 
     public PlanoDiario buscarOuCriarPlanoDoDia(Aluno aluno, LocalDate data) {
-        return planoDiarioDao.buscarPorAlunoEData(aluno.getId(), data)
-                .map(plano -> {
-                    plano.setAluno(aluno);
-                    var itens =  new ArrayList<>(itemPlanoDao.buscarPorPlano(plano.getId()));
-                    plano.setItens(itens);
-                    return plano;
-                }).orElseGet(() -> {
+        return planoDiarioRepository.findByAlunoAndData(aluno.getId(), data)
+                .orElseGet(() -> {
                     if (data.isBefore(LocalDate.now())) {
                         throw new DataInvalidaException(
                                 "Não é possível criar um novo plano para uma data passada (" + data
@@ -37,9 +32,7 @@ public class PlanoDiarioService {
                     PlanoDiario novoPlano = new PlanoDiario();
                     novoPlano.setAluno(aluno);
                     novoPlano.setData(data);
-                    novoPlano.setItens(new ArrayList<>());
-                    planoDiarioDao.inserirPlanoDiario(novoPlano);
-                    return novoPlano;
+                    return planoDiarioRepository.save(novoPlano);
                 });
     }
 
@@ -62,9 +55,10 @@ public class PlanoDiarioService {
             ItemPlano item = itemExistente.get();
             item.setQuantidade(item.getQuantidade() + quantidadeAdcional);
             item.calcularTotalNutricional();
-            itemPlanoDao.atualizarQuantidade(item.getId(), item.getQuantidade(), item.getCaloriasTotais());
+            itemPlanoRepository.save(item);
         }else{
-            itemPlanoDao.inserirItem(itemParaValidar, plano.getId());
+            itemParaValidar.setPlanoDiario(plano);
+            itemPlanoRepository.save(itemParaValidar);
             plano.getItens().add(itemParaValidar);
         }
 
@@ -76,17 +70,17 @@ public class PlanoDiarioService {
     }
 
     public void removerItem(PlanoDiario plano, Long idRemover){
-        int linhasAfetadas = itemPlanoDao.removerItem(idRemover);
-        if(linhasAfetadas == 0){
+        if(!itemPlanoRepository.existsById(idRemover)){
             throw new EntidadeNaoEncontradaException("Erro na remoção: item com id: "
                     + idRemover + " não encontrado.");
         }
 
+        itemPlanoRepository.deleteById(idRemover);
         plano.getItens().removeIf(i ->
                 i.getId().equals(idRemover));
     }
 
     public InformacaoNutricional calcularResumoNutricional(PlanoDiario plano){
-        return itemPlanoDao.somarResumoPorPlano(plano.getId());
+        return itemPlanoRepository.somarResumoPorPlano(plano.getId());
     }
 }

@@ -3,18 +3,21 @@ package br.edu.ifsp.service;
 import br.edu.ifsp.exceptions.EntidadeNaoEncontradaException;
 import br.edu.ifsp.exceptions.RegraDeNegocioException;
 import br.edu.ifsp.model.Aluno;
-import br.edu.ifsp.repository.AlunoDao;
+import br.edu.ifsp.repository.AlunoRepository;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
+@Service
+@RequiredArgsConstructor
 public class AlunoService {
     private final CalculoNutricaoService calculoNutricaoService;
-    private final AlunoDao alunoDao;
+    private final AlunoRepository alunoRepository;
 
-    public AlunoService() {
-        this.calculoNutricaoService = new CalculoNutricaoService();
-        this.alunoDao = new AlunoDao();
-    }
 
     public void cadastrar(Aluno novoAluno) {
         if(novoAluno == null){throw new RegraDeNegocioException("O aluno cadastrado não pode ser nulo");}
@@ -26,39 +29,38 @@ public class AlunoService {
             novoAluno.setMetaCaloricaDefinida(metaCaloricaEstimada);
         }
 
-        alunoDao.inserir(novoAluno);
+        alunoRepository.save(novoAluno);
     }
 
     public List<Aluno> listar()  {
-        return alunoDao.listarTodos();
+        return alunoRepository.findAll();
     }
 
-    public Aluno buscarPorId(Long idBuscado) {
-        return alunoDao.buscarPorId(idBuscado)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Aluno não encontrado. ID: " + idBuscado));
+    public Optional<Aluno> buscarPorId(Long idBuscado) {
+        return alunoRepository.findById(idBuscado);
     }
 
 
     public void alter(Aluno alunoAlterar) {
        if(alunoAlterar == null){throw new RegraDeNegocioException("O aluno pra alterar não pode ser nulo");}
 
+       if(!alunoRepository.existsById(alunoAlterar.getId())){
+           throw  new EntidadeNaoEncontradaException("Falha na alteração. Aluno com id: " + alunoAlterar.getId()
+                   +  " não foi encontrado.");
+       }
+
         double metaCaloricaEstimada = calculoNutricaoService.calculaMetaCalorica(alunoAlterar);
         alunoAlterar.setMetaCaloricaEstimada(metaCaloricaEstimada);
 
-        int linhasAfetadas = alunoDao.alterar(alunoAlterar);
-
-        if(linhasAfetadas == 0){
-            throw  new EntidadeNaoEncontradaException("Falha na alteração. Aluno com id: " + alunoAlterar.getId()
-                    +  " não foi encontrado.");
-        }
+        alunoRepository.save(alunoAlterar);
     }
 
     public void deletar(Long idRemover){
-        int linhasAfetadas = alunoDao.remover(idRemover);
-        if(linhasAfetadas == 0){
+        if(!alunoRepository.existsById(idRemover)){
             throw  new EntidadeNaoEncontradaException("Falha na remoção. Aluno com id: " + idRemover
                     + " não foi   encontrado");
         }
+        alunoRepository.deleteById(idRemover);
     }
 
 
