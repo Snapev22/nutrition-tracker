@@ -3,7 +3,6 @@ package br.edu.ifsp.service;
 import br.edu.ifsp.exceptions.EntidadeNaoEncontradaException;
 import br.edu.ifsp.exceptions.RegraDeNegocioException;
 import br.edu.ifsp.model.Alimento;
-import br.edu.ifsp.repository.AlimentoDao;
 import br.edu.ifsp.repository.AlimentoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
