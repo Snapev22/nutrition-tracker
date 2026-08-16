@@ -77,6 +77,10 @@ public class PlanoDiarioService {
                 i.getId().equals(idRemover));
     }
 
+    public Optional<PlanoDiario> buscarPlanoParaConsulta(Aluno aluno, LocalDate data) {
+        return planoDiarioRepository.findByAlunoIdAndDataComItens(aluno.getId(), data);
+    }
+
     public InformacaoNutricional calcularResumoNutricional(PlanoDiario plano){
         return itemPlanoRepository.somarResumoPorPlano(plano.getId());
     }

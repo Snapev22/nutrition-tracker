@@ -135,7 +135,7 @@ public class PlanoController {
     }
 
     private void atualizarResumo() {
-        double meta = planoAtual.getAluno().getMetaCaloricaEstimada();
+        double meta = planoAtual.getAluno().getMetaCaloricaDefinida();
         InformacaoNutricional resumo = planoDiarioService.calcularResumoNutricional(planoAtual);
         double restante = meta - resumo.getCalorias();
 
@@ -178,13 +178,13 @@ public class PlanoController {
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() {
-                planoDiarioService.adicionarItem(planoAtual, alimento, quantidade);
+                planoDiarioService.adicionarItem(planoAtual, alimento, quantidade, ignorarLimite);
                 return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            tableItens.refresh();
+            atualizarTabela();
             atualizarResumo();
             tfQuantidade.clear();
         });

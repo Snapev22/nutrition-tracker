@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -59,11 +60,14 @@ public class DashboardController {
             return;
         }
 
-        PlanoDiario plano = planoDiarioService.buscarOuCriarPlanoDoDia(alunoSelecionado, data);
+         Optional<PlanoDiario> planoOpt = planoDiarioService.buscarPlanoParaConsulta(alunoSelecionado, data);
 
         double meta = alunoSelecionado.getMetaCaloricaDefinida();
-        InformacaoNutricional resumo = planoDiarioService.calcularResumoNutricional(plano);
+        InformacaoNutricional resumo = planoOpt.isPresent()
+                ? planoDiarioService.calcularResumoNutricional(planoOpt.get())
+                : InformacaoNutricional.zero();
         double restante = meta - resumo.getCalorias();
+
 
         lblMetaDashboard.setText(String.format("Meta Definida: %.2f kcal", meta));
         lblConsumidoDashboard.setText(String.format("Adcionado: %.2f kcal", resumo.getCalorias()));
