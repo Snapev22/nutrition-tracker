@@ -54,8 +54,8 @@ build/
 application-local.properties
 application-dev.properties
 src/main/resources/application.properties
-src/main/resources/application.yml
-src/test/ressources/application-test.yml
+nutrition-tracker-desktop/src/main/resources/application.yml
+nutrition-tracker-core/src/test/resources/application-test.yml
 
 # Variáveis de ambiente
 .env
