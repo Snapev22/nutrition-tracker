@@ -1,3 +1,0 @@
-db.url=jdbc:mysql://localhost:3306/NOME_DO_BANCO
-db.user=SEU_USUARIO
-db.password=SUA_SENHA
