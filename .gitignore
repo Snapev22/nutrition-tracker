@@ -57,6 +57,7 @@ application-dev.properties
 src/main/resources/application.properties
 nutrition-tracker-desktop/src/main/resources/application.yml
 nutrition-tracker-core/src/test/resources/application-test.yml
+nutrition-tracker-api/src/main/resources/application.yml
 
 # Variáveis de ambiente
 .env
