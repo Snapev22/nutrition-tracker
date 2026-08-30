@@ -11,13 +11,7 @@
     import javafx.collections.FXCollections;
     import javafx.concurrent.Task;
     import javafx.fxml.FXML;
-    import javafx.scene.control.Alert;
-    import javafx.scene.control.Button;
-    import javafx.scene.control.ComboBox;
-    import javafx.scene.control.Label;
-    import javafx.scene.control.TableColumn;
-    import javafx.scene.control.TableView;
-    import javafx.scene.control.TextField;
+    import javafx.scene.control.*;
     import javafx.scene.control.cell.PropertyValueFactory;
     import javafx.scene.shape.Rectangle;
     import lombok.RequiredArgsConstructor;
@@ -122,7 +116,23 @@
             colSexo.setCellValueFactory(new PropertyValueFactory<>("sexo"));
             colObjetivo.setCellValueFactory(new PropertyValueFactory<>("objetivo"));
             colMetaCaloricaEstimada.setCellValueFactory(new PropertyValueFactory<>("metaCaloricaEstimada"));
+            //arrendodamento de casas decimais.
+            colMetaCaloricaEstimada.setCellFactory(coluna -> new TableCell<Aluno, Double>() {
+                @Override
+                protected void updateItem(Double valor, boolean vazio) {
+                    super.updateItem(valor, vazio);
+                    setText((vazio || valor == null) ? null : String.format("%.0f kcal", valor));
+                }
+            });
+
             colMetaDefinida.setCellValueFactory(new PropertyValueFactory<>("metaCaloricaDefinida"));
+            colMetaDefinida.setCellFactory(coluna -> new TableCell<Aluno, Double>() {
+                @Override
+                protected void updateItem(Double valor, boolean vazio) {
+                    super.updateItem(valor, vazio);
+                    setText((vazio || valor == null) ? null : String.format("%.0f kcal", valor));
+                }
+            });
         }
 
         private void carregarTabela() {
