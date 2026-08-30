@@ -23,7 +23,7 @@ public class AlimentoService {
     }
 
     public List<Alimento> listar(){
-        return alimentoRepository.findAll();
+        return alimentoRepository.findAllByOrderByNomeAsc();
     }
 
     public void alterar(Alimento alimentoAlterar) {

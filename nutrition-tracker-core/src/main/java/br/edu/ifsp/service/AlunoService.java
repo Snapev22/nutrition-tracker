@@ -31,7 +31,8 @@ public class AlunoService {
     }
 
     public List<Aluno> listar()  {
-        return alunoRepository.findAll();
+
+        return alunoRepository.findAllByOrderByNomeAsc();
     }
 
     public Optional<Aluno> buscarPorId(Long idBuscado) {
