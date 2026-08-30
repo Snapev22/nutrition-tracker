@@ -16,6 +16,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -94,6 +95,15 @@ public class PlanoController {
         colProteina.setCellFactory(criarCellFactoryFormatada("%.1f"));
         colCarboidrato.setCellFactory(criarCellFactoryFormatada("%.1f"));
         colGordura.setCellFactory(criarCellFactoryFormatada("%.1f"));
+
+        //Cantos arredondados na tela.
+        Rectangle clip = new Rectangle();
+        clip.widthProperty().bind(tableItens.widthProperty());
+        clip.heightProperty().bind(tableItens.heightProperty());
+        clip.setArcWidth(20);
+        clip.setArcHeight(20);
+        tableItens.setClip(clip);
+
     }
 
     private Callback<TableColumn<ItemPlano, Double>, TableCell<ItemPlano, Double>> criarCellFactoryFormatada(String pattern) {
@@ -139,12 +149,12 @@ public class PlanoController {
         InformacaoNutricional resumo = planoDiarioService.calcularResumoNutricional(planoAtual);
         double restante = meta - resumo.getCalorias();
 
-        lblMeta.setText(String.format("Meta: %.2f kcal", meta));
-        lblPlanejado.setText(String.format("Planejado: %.2f kcal", resumo.getCalorias()));
-        lblRestante.setText(String.format("Restante: %.2f kcal", restante));
-        lblProteina.setText(String.format("Proteína: %.1f g", resumo.getProteina()));
-        lblCarboidrato.setText(String.format("Carboidrato: %.1f g", resumo.getCarboidrato()));
-        lblGordura.setText(String.format("Gordura: %.1f g", resumo.getGordura()));
+        lblMeta.setText(String.format("%.2f kcal", meta));
+        lblPlanejado.setText(String.format("%.2f kcal", resumo.getCalorias()));
+        lblRestante.setText(String.format("%.2f kcal", restante));
+        lblProteina.setText(String.format("%.1f g", resumo.getProteina()));
+        lblCarboidrato.setText(String.format("%.1f g", resumo.getCarboidrato()));
+        lblGordura.setText(String.format("%.1f g", resumo.getGordura()));
     }
 
     @FXML

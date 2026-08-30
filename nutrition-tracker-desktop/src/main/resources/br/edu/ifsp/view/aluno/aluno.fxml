@@ -72,6 +72,13 @@
             <Label text="Alunos Cadastrados" styleClass="titulo"/>
 
             <TableView fx:id="tableAlunos" VBox.vgrow="ALWAYS">
+                <placeholder>
+                    <VBox styleClass="table-empty-state">
+                        <Label text="👥" styleClass="empty-icon"/>
+                        <Label text="Nenhum aluno cadastrado" styleClass="empty-title"/>
+                        <Label text="Preencha o formulário ao lado para começar" styleClass="empty-subtitle"/>
+                    </VBox>
+                </placeholder>
                 <columns>
                     <TableColumn fx:id="colNome" text="Nome" prefWidth="140.0"/>
                     <TableColumn fx:id="colIdade" text="Idade" prefWidth="60.0"/>

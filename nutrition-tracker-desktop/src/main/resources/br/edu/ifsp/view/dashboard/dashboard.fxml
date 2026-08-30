@@ -38,16 +38,34 @@
         <Button fx:id="btnAtualizarDashboard" text="Atualizar" styleClass="botao-primario" onAction="#onAtualizarDashboard"/>
     </HBox>
 
-    <VBox spacing="10.0" alignment="CENTER" styleClass="info-box">
-        <Label fx:id="lblMetaDashboard" text="Meta diária: -- kcal" styleClass="info-label"/>
-        <Label fx:id="lblConsumidoDashboard" text="Planejado: -- kcal" styleClass="info-label"/>
-        <Label fx:id="lblRestanteDashboard" text="Restante: -- kcal" styleClass="info-label"/>
-    </VBox>
+    <HBox spacing="30.0" alignment="CENTER" styleClass="info-box" maxWidth="560.0">
+        <VBox spacing="2" alignment="CENTER">
+            <Label text="Meta diária" styleClass="metric-label"/>
+            <Label fx:id="lblMetaDashboard" styleClass="metric-value" text="--"/>
+        </VBox>
+        <VBox spacing="2" alignment="CENTER">
+            <Label text="Planejado" styleClass="metric-label"/>
+            <Label fx:id="lblConsumidoDashboard" styleClass="metric-value" text="--"/>
+        </VBox>
+        <VBox spacing="2" alignment="CENTER">
+            <Label text="Restante" styleClass="metric-label"/>
+            <Label fx:id="lblRestanteDashboard" styleClass="metric-value" text="--"/>
+        </VBox>
+    </HBox>
 
-    <HBox spacing="20.0" alignment="CENTER">
-        <Label fx:id="lblProteinaDashboard" text="Proteína: -- g" styleClass="resumo-label"/>
-        <Label fx:id="lblCarboidratoDashboard" text="Carboidrato: -- g" styleClass="resumo-label"/>
-        <Label fx:id="lblGorduraDashboard" text="Gordura: -- g" styleClass="resumo-label"/>
+    <HBox spacing="24.0" alignment="CENTER" maxWidth="480.0">
+        <VBox spacing="2" alignment="CENTER">
+            <Label text="Proteína" styleClass="metric-label"/>
+            <Label fx:id="lblProteinaDashboard" styleClass="metric-value compact" text="--"/>
+        </VBox>
+        <VBox spacing="2" alignment="CENTER">
+            <Label text="Carboidrato" styleClass="metric-label"/>
+            <Label fx:id="lblCarboidratoDashboard" styleClass="metric-value compact" text="--"/>
+        </VBox>
+        <VBox spacing="2" alignment="CENTER">
+            <Label text="Gordura" styleClass="metric-label"/>
+            <Label fx:id="lblGorduraDashboard" styleClass="metric-value compact" text="--"/>
+        </VBox>
     </HBox>
 
     <VBox spacing="8.0" alignment="CENTER" maxWidth="500.0">

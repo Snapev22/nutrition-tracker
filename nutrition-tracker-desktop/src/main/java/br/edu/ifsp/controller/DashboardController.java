@@ -69,12 +69,12 @@ public class DashboardController {
         double restante = meta - resumo.getCalorias();
 
 
-        lblMetaDashboard.setText(String.format("Meta Definida: %.2f kcal", meta));
-        lblConsumidoDashboard.setText(String.format("Adcionado: %.2f kcal", resumo.getCalorias()));
-        lblRestanteDashboard.setText(String.format("Restante: %.2f kcal", restante));
-        lblProteinaDashboard.setText(String.format("Proteína: %.1f g", resumo.getProteina()));
-        lblCarboidratoDashboard.setText(String.format("Carboidrato: %.1f g", resumo.getCarboidrato()));
-        lblGorduraDashboard.setText(String.format("Gordura: %.1f g", resumo.getGordura()));
+        lblMetaDashboard.setText(String.format("%.2f kcal", meta));
+        lblConsumidoDashboard.setText(String.format("%.2f kcal", resumo.getCalorias()));
+        lblRestanteDashboard.setText(String.format("%.2f kcal", restante));
+        lblProteinaDashboard.setText(String.format("%.1f g", resumo.getProteina()));
+        lblCarboidratoDashboard.setText(String.format("%.1f g", resumo.getCarboidrato()));
+        lblGorduraDashboard.setText(String.format("%.1f g", resumo.getGordura()));
 
         double percentual = (meta == 0) ? 0 : resumo.getCalorias() / meta;
 

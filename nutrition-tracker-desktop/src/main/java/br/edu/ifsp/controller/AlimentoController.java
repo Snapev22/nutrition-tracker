@@ -11,6 +11,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.scene.shape.Rectangle;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -78,6 +79,15 @@ public class AlimentoController {
                 preencherFormulario(newItem);
             }
         });
+
+        //Cantos arredondados na tela.
+        Rectangle clip = new Rectangle();
+        clip.widthProperty().bind(tableAlimentos.widthProperty());
+        clip.heightProperty().bind(tableAlimentos.heightProperty());
+        clip.setArcWidth(20);
+        clip.setArcHeight(20);
+        tableAlimentos.setClip(clip);
+
     }
     private String descricaoUnidadeMedida(UnidadeMedida unidade) {
         return switch (unidade) {

@@ -30,7 +30,8 @@
 -->
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="br.edu.ifsp.controller.PlanoController"
-      spacing="15.0">
+      spacing="15.0"
+      alignment="TOP_CENTER">
     <padding>
         <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
     </padding>
@@ -45,13 +46,31 @@
     </HBox>
 
     <!-- Resumo -->
-    <HBox spacing="30.0" alignment="CENTER_LEFT" styleClass="resumo-box">
-        <Label fx:id="lblMeta" text="Meta: -- kcal" styleClass="resumo-label"/>
-        <Label fx:id="lblPlanejado" text="Planejado: -- kcal" styleClass="resumo-label"/>
-        <Label fx:id="lblRestante" text="Restante: -- kcal" styleClass="resumo-label"/>
-        <Label fx:id="lblProteina" text="Proteína: -- g" styleClass="resumo-label"/>
-        <Label fx:id="lblCarboidrato" text="Carboidrato: -- g" styleClass="resumo-label"/>
-        <Label fx:id="lblGordura" text="Gordura: -- g" styleClass="resumo-label"/>
+    <HBox spacing="30.0" alignment="CENTER" styleClass="resumo-box" maxWidth="760.0">
+        <VBox spacing="2" alignment="CENTER">
+            <Label text="Meta" styleClass="metric-label"/>
+            <Label fx:id="lblMeta" styleClass="metric-value" text="--"/>
+        </VBox>
+        <VBox spacing="2" alignment="CENTER">
+            <Label text="Planejado" styleClass="metric-label"/>
+            <Label fx:id="lblPlanejado" styleClass="metric-value" text="--"/>
+        </VBox>
+        <VBox spacing="2" alignment="CENTER">
+            <Label text="Restante" styleClass="metric-label"/>
+            <Label fx:id="lblRestante" styleClass="metric-value" text="--"/>
+        </VBox>
+        <VBox spacing="2" alignment="CENTER">
+            <Label text="Proteína" styleClass="metric-label"/>
+            <Label fx:id="lblProteina" styleClass="metric-value compact" text="--"/>
+        </VBox>
+        <VBox spacing="2" alignment="CENTER">
+            <Label text="Carboidrato" styleClass="metric-label"/>
+            <Label fx:id="lblCarboidrato" styleClass="metric-value compact" text="--"/>
+        </VBox>
+        <VBox spacing="2" alignment="CENTER">
+            <Label text="Gordura" styleClass="metric-label"/>
+            <Label fx:id="lblGordura" styleClass="metric-value compact" text="--"/>
+        </VBox>
     </HBox>
 
 
@@ -68,6 +87,13 @@
     <Label text="Itens do Plano" styleClass="titulo"/>
 
     <TableView fx:id="tableItens" VBox.vgrow="ALWAYS">
+        <placeholder>
+            <VBox styleClass="table-empty-state">
+                <Label text="🍽️" styleClass="empty-icon"/>
+                <Label text="Nenhum item adicionado ao plano" styleClass="empty-title"/>
+                <Label text="Carregue um plano e adcione alimentos para preencher" styleClass="empty-subtitle"/>
+            </VBox>
+        </placeholder>
         <columns>
             <TableColumn fx:id="colAlimentoNome" text="Alimento" prefWidth="220.0"/>
             <TableColumn fx:id="colQuantidade" text="Quantidade" prefWidth="120.0"/>

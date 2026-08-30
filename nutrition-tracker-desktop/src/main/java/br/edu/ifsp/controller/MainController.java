@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class MainController {
@@ -38,26 +40,31 @@ public class MainController {
     @FXML
     public void initialize() {
         carregarTela("/br/edu/ifsp/view/aluno/aluno.fxml");
+        marcarBotaoAtivo(btnNavAlunos);
     }
 
     @FXML
     private void onNavAlunos() {
         carregarTela("/br/edu/ifsp/view/aluno/aluno.fxml");
+        marcarBotaoAtivo(btnNavAlunos);
     }
 
     @FXML
     private void onNavAlimentos() {
         carregarTela("/br/edu/ifsp/view/alimento/alimento.fxml");
+        marcarBotaoAtivo(btnNavAlimentos);
     }
 
     @FXML
     private void onNavPlano() {
         carregarTela("/br/edu/ifsp/view/plano/plano.fxml");
+        marcarBotaoAtivo(btnNavPlano);
     }
 
     @FXML
     private void onNavDashboard() {
         carregarTela("/br/edu/ifsp/view/dashboard/dashboard.fxml");
+        marcarBotaoAtivo(btnNavDashboard);
     }
 
     private void carregarTela(String caminhoFxml) {
@@ -79,5 +86,11 @@ public class MainController {
 
             alert.showAndWait();
         }
+    }
+
+    private void marcarBotaoAtivo(Button botaoAtivo) {
+        List.of(btnNavAlunos, btnNavAlimentos, btnNavPlano, btnNavDashboard)
+                .forEach(botao -> botao.getStyleClass().remove("active"));
+        botaoAtivo.getStyleClass().add("active");
     }
 }

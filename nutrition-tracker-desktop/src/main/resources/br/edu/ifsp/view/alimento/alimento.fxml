@@ -65,6 +65,13 @@
             <Label text="Alimentos Cadastrados" styleClass="titulo"/>
 
             <TableView fx:id="tableAlimentos" VBox.vgrow="ALWAYS">
+                <placeholder>
+                    <VBox styleClass="table-empty-state">
+                        <Label text="🍎" styleClass="empty-icon"/>
+                        <Label text="Nenhum alimento cadastrado" styleClass="empty-title"/>
+                        <Label text="Preencha o formulário ao lado para começar" styleClass="empty-subtitle"/>
+                    </VBox>
+                </placeholder>
                 <columns>
                     <TableColumn fx:id="colNome" text="Nome" prefWidth="150.0"/>
                     <TableColumn fx:id="colProteina" text="Proteína" prefWidth="90.0"/>

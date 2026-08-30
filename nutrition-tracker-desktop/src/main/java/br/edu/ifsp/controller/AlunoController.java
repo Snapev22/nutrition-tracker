@@ -19,6 +19,7 @@
     import javafx.scene.control.TableView;
     import javafx.scene.control.TextField;
     import javafx.scene.control.cell.PropertyValueFactory;
+    import javafx.scene.shape.Rectangle;
     import lombok.RequiredArgsConstructor;
     import org.springframework.stereotype.Component;
 
@@ -73,6 +74,14 @@
                     preencherFormulario(newItem);
                 }
             });
+
+            //Cantos arredondados na tela.
+            Rectangle clip = new Rectangle();
+            clip.widthProperty().bind(tableAlunos.widthProperty());
+            clip.heightProperty().bind(tableAlunos.heightProperty());
+            clip.setArcWidth(20);
+            clip.setArcHeight(20);
+            tableAlunos.setClip(clip);
         }
 
         private void configurarConversores() {

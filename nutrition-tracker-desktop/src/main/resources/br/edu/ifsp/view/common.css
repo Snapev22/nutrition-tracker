@@ -1,177 +1,362 @@
+/* ============================================================
+   NutritionTracker — styles.css
+   Redesign: painel administrativo moderno (ref. Linear/Vercel/Notion)
+   Base estrutural (BorderPane/VBox/HBox/GridPane) inalterada — este
+   arquivo cobre apenas estilo. Ver notas de spacing pontual no FXML
+   ao final do handoff em chat.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. TOKENS DE COR / TIPOGRAFIA
+   JavaFX CSS suporta "looked-up colors": variáveis definidas em
+   .root e referenciadas em qualquer seletor abaixo dele.
+   Identidade mantida (navy / azul / vermelho); neutros suavizados.
+   ------------------------------------------------------------ */
 .root {
-    -fx-font-family: "Segoe UI", sans-serif;
-    -fx-background-color: #f4f6f8;
+    -fx-navy: #2c3e50;
+    -fx-navy-light: #34495e;
+    -fx-accent: #2e86de;
+    -fx-accent-hover: #2574c4;
+    -fx-accent-soft: #eaf2fc;
+    -fx-danger: #e74c3c;
+    -fx-danger-hover: #c0392b;
+    -fx-danger-soft: #fdecea;
+    -fx-bg: #f4f6f8;
+    -fx-surface: #ffffff;
+    -fx-border-soft: #e3e7ec;   /* cinza intermediário mais suave que o antigo */
+    -fx-border-softer: #edf0f3;
+    -fx-text-primary: #2c3e50;
+    -fx-text-secondary: #8a97a5;
+    -fx-text-muted: #b0b9c2;
+
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-background-color: -fx-bg;
+    -fx-text-fill: -fx-text-primary;
 }
 
-/* ==========================
-   TÍTULOS
-   ========================== */
-
-.titulo {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #2c3e50;
-    -fx-padding: 0 0 8 0;
-}
-
+/* ------------------------------------------------------------
+   2. HEADER / NAVEGAÇÃO
+   CORRIGIDO: a navegação real é ToolBar + Button (main.fxml), não
+   um TabPane — as regras .tab-pane foram substituídas pelas classes
+   que o FXML já usa (app-header/app-titulo) + um novo .nav-button
+   para os 4 botões de navegação da ToolBar.
+   ------------------------------------------------------------ */
 .app-header {
-    -fx-background-color: #2c3e50;
-    -fx-padding: 16 20;
+    -fx-background-color: -fx-navy;
+    -fx-padding: 16 24;
 }
-
 .app-titulo {
     -fx-text-fill: white;
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
 }
 
-/* ==========================
-   BOTÕES
-   ========================== */
+.tool-bar {
+    -fx-background-color: -fx-surface;
+    -fx-border-color: transparent transparent -fx-border-soft transparent;
+    -fx-border-width: 1;
+    -fx-padding: 8 20;
+    -fx-spacing: 6;
+}
 
-.botao-primario {
-    -fx-background-color: #2e86de;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-background-radius: 4;
+/* botões de navegação — adicionar styleClass="nav-button" nos 4
+   botões do main.fxml (ver handoff no chat) para ativar este estilo */
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 6;
+    -fx-padding: 9 16;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -fx-text-secondary;
     -fx-cursor: hand;
 }
-
-.botao-primario:hover {
-    -fx-background-color: #1b6fc2;
+.nav-button:hover {
+    -fx-background-color: -fx-accent-soft;
+    -fx-text-fill: -fx-accent;
+}
+/* estado ativo — alternado via código no MainController (ver handoff) */
+.nav-button.active {
+    -fx-background-color: -fx-accent-soft;
+    -fx-text-fill: -fx-accent;
+    -fx-font-weight: 700;
 }
 
-.botao-secundario {
-    -fx-background-color: #ecf0f1;
-    -fx-text-fill: #2c3e50;
-    -fx-font-weight: bold;
-    -fx-background-radius: 4;
-    -fx-cursor: hand;
+/* ------------------------------------------------------------
+   3. CARDS / PAINÉIS (.resumo-box, .info-box)
+   Substitui borda plana por elevação real (dropshadow) + raio
+   consistente. Sombra sutil de 2 camadas para profundidade real
+   sem exagero (referência Linear/Notion usa sombras bem discretas).
+   ------------------------------------------------------------ */
+.resumo-box, .info-box, .card {
+    -fx-background-color: -fx-surface;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: -fx-border-softer;
+    -fx-border-width: 1;
+    -fx-padding: 20 24;
+    -fx-spacing: 12;
+    -fx-effect: dropshadow(gaussian, rgba(44,62,80,0.08), 14, 0, 0, 3);
 }
 
-.botao-secundario:hover {
-    -fx-background-color: #dde4e6;
+/* leve destaque no hover para cards clicáveis (ex: card de aluno) */
+.resumo-box.clickable:hover, .info-box.clickable:hover, .card.clickable:hover {
+    -fx-border-color: -fx-accent;
+    -fx-effect: dropshadow(gaussian, rgba(44,62,80,0.14), 18, 0, 0, 5);
 }
 
-.botao-perigo {
-    -fx-background-color: #e74c3c;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-background-radius: 4;
-    -fx-cursor: hand;
+/* ------------------------------------------------------------
+   4. HIERARQUIA TIPOGRÁFICA
+   Título de seção > valor em destaque > label de campo.
+   Usar estas classes nos Label do FXML (ex: Dashboard: valor de
+   "Meta/Planejado/Restante" = .metric-value; o texto ao lado = .metric-label)
+   ------------------------------------------------------------ */
+/* .titulo é o nome já usado no FXML (aluno/alimento/plano) — mesma
+   regra de .section-title, sem precisar renomear nada no FXML */
+.section-title, .titulo {
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -fx-navy;
+    -fx-padding: 0 0 4 0;
 }
 
-.botao-perigo:hover {
-    -fx-background-color: #c0392b;
-}
-
-/* ==========================
-   CAMPOS DE ENTRADA
-   ========================== */
-
-.text-field,
-.combo-box,
-.date-picker {
-    -fx-background-radius: 4;
-    -fx-border-radius: 4;
-    -fx-border-color: #ced4da;
-}
-
-.text-field:focused,
-.combo-box:focused,
-.date-picker:focused {
-    -fx-border-color: #2e86de;
-}
-
-/* ==========================
-   DASHBOARD
-   ========================== */
-
+/* usado em lblMetaCaloricaEstimada (aluno.fxml) — texto informativo
+   de destaque médio, entre field-label e metric-value */
 .meta-calorica {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #16a085;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -fx-navy;
 }
 
-.resumo-box {
-    -fx-background-color: white;
-    -fx-padding: 12;
+.field-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -fx-text-secondary;
+}
+
+.metric-value {
+    -fx-font-size: 26px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -fx-navy;
+}
+
+.metric-value.accent { -fx-text-fill: -fx-accent; }
+.metric-value.danger { -fx-text-fill: -fx-danger; }
+
+/* usar junto com metric-value nos macros (Proteína/Carboidrato/Gordura) —
+   mesmo peso semântico de "número", um degrau abaixo das calorias */
+.metric-value.compact {
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+}
+
+.metric-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -fx-text-muted;
+    /* letter-spacing simula caixa alta discreta de dashboards enterprise */
+    -fx-text-alignment: left;
+}
+
+/* Fallback para .resumo-label/.info-label ENQUANTO os Labels não são
+   separados em rótulo+valor (ver opção A no handoff do chat). Uma vez
+   feita a separação (opção B, recomendada), troque estas classes no
+   FXML por metric-label/metric-value e pode apagar este bloco. */
+.resumo-label, .info-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -fx-navy;
+}
+
+/* ------------------------------------------------------------
+   5. BOTÕES
+   Mantém paleta atual, adiciona raio (já existia) + hover mais
+   perceptível + variantes primária/perigo explícitas.
+   ------------------------------------------------------------ */
+.button {
     -fx-background-radius: 6;
     -fx-border-radius: 6;
-    -fx-border-color: #dcdde1;
+    -fx-padding: 9 18;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+    -fx-background-color: -fx-surface;
+    -fx-border-color: -fx-border-soft;
+    -fx-border-width: 1;
+    -fx-text-fill: -fx-text-primary;
+}
+.button:hover {
+    -fx-border-color: -fx-text-muted;
+    -fx-background-color: -fx-border-softer;
 }
 
-.resumo-label {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #2c3e50;
+/* .botao-primario / .botao-perigo são os nomes já usados no FXML —
+   mesma regra de .button-primary / .button-danger */
+.button-primary, .botao-primario {
+    -fx-background-color: -fx-accent;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+}
+.button-primary:hover, .botao-primario:hover {
+    -fx-background-color: -fx-accent-hover;
 }
 
-.info-box {
-    -fx-background-color: white;
-    -fx-padding: 25 40;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-    -fx-border-color: #dcdde1;
+.button-danger, .botao-perigo {
+    -fx-background-color: -fx-danger;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+}
+.button-danger:hover, .botao-perigo:hover {
+    -fx-background-color: -fx-danger-hover;
 }
 
-.info-label {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #2c3e50;
+.button:disabled {
+    -fx-opacity: 0.55;
+    -fx-cursor: default;
 }
 
-/* ==========================
-   PROGRESS BAR
-   ========================== */
-
-.progress-bar {
-    -fx-pref-height: 18;
-}
-
-.progress-ok > .bar {
-    -fx-background-color: #27ae60;
-}
-
-.progress-alerta > .bar {
-    -fx-background-color: #f39c12;
-}
-
-.progress-excedido > .bar {
-    -fx-background-color: #e74c3c;
-}
-
-/* ==========================
-   TABLE VIEW
-   ========================== */
-
-.table-view {
-    -fx-background-color: white;
-    -fx-border-color: #dcdde1;
+/* ------------------------------------------------------------
+   6. CAMPOS DE FORMULÁRIO
+   Raio + padding maior + estado de foco com o azul de destaque.
+   ------------------------------------------------------------ */
+.text-field, .text-area, .combo-box, .date-picker, .spinner, .choice-box {
+    -fx-background-color: -fx-surface;
+    -fx-background-radius: 6;
     -fx-border-radius: 6;
+    -fx-border-color: -fx-border-soft;
+    -fx-border-width: 1;
+    -fx-padding: 8 12;
+    -fx-font-size: 13px;
+}
+.text-field:focused, .text-area:focused, .combo-box:focused, .date-picker:focused {
+    -fx-border-color: -fx-accent;
+    -fx-effect: dropshadow(gaussian, rgba(46,134,222,0.25), 6, 0, 0, 0);
 }
 
-.table-cell {
-    -fx-padding: 6 8;
+/* container do formulário lateral — respiro maior entre grupos de campo */
+.form-container, .sidebar-form {
+    -fx-spacing: 18;
+    -fx-padding: 24;
+}
+.form-container .field-group, .sidebar-form .field-group {
+    -fx-spacing: 6;
+}
+
+/* ------------------------------------------------------------
+   7. TABELA CENTRAL
+   Raio no container (ver nota sobre clip no chat), header mais
+   sóbrio, hover de linha, seleção com tinta do azul de destaque.
+   ------------------------------------------------------------ */
+.table-view {
+    -fx-background-color: -fx-surface;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: -fx-border-softer;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(44,62,80,0.06), 10, 0, 0, 2);
+    -fx-padding: 0;
 }
 
 .table-view .column-header-background {
-    -fx-background-color: #2c3e50;
+    -fx-background-color: -fx-surface;
+    -fx-background-radius: 10 10 0 0;
+    -fx-border-color: transparent transparent -fx-border-soft transparent;
+    -fx-border-width: 1;
 }
-
-.table-view .column-header {
+.table-view .column-header, .table-view .filler {
     -fx-background-color: transparent;
+    -fx-padding: 12 10;
+}
+.table-view .column-header .label {
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -fx-text-secondary;
 }
 
-.table-view .column-header .label {
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
+.table-row-cell {
+    -fx-background-color: -fx-surface;
+    -fx-border-color: transparent transparent -fx-border-softer transparent;
+    -fx-border-width: 1;
+    -fx-cell-size: 42px;
+}
+.table-row-cell .table-cell {
+    -fx-padding: 0 10;
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER-LEFT;
+}
+
+/* feedback de hover pedido explicitamente — antes inexistente */
+.table-row-cell:hover {
+    -fx-background-color: -fx-accent-soft;
 }
 
 .table-row-cell:selected {
-    -fx-background-color: #2e86de;
+    -fx-background-color: derive(-fx-accent, 85%);
+}
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: -fx-navy;
 }
 
-.table-row-cell:selected .text {
-    -fx-fill: white;
+/* ------------------------------------------------------------
+   8. ESTADO VAZIO DA TABELA
+   O placeholder do TableView é um Node normal — recomendo trocar
+   o texto simples por um VBox (ícone + título + subtítulo)
+   definido no FXML via <placeholder>...</placeholder> e estilizado
+   aqui. Ver snippet de FXML sugerido no chat.
+   ------------------------------------------------------------ */
+.table-empty-state {
+    -fx-alignment: center;
+    -fx-spacing: 8;
+    -fx-padding: 40;
+}
+.table-empty-state .empty-icon {
+    -fx-font-size: 32px;
+    -fx-text-fill: -fx-text-muted;
+}
+.table-empty-state .empty-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -fx-text-secondary;
+}
+.table-empty-state .empty-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-text-muted;
+}
+
+/* ------------------------------------------------------------
+   9. PROGRESS BAR (Dashboard — progressBarConsumo)
+   Classes progress-ok/progress-alerta/progress-excedido já são
+   alternadas pelo DashboardController; só faltava o estilo base.
+   ------------------------------------------------------------ */
+.progress-bar {
+    -fx-pref-height: 20;
+}
+.progress-bar > .track {
+    -fx-background-color: -fx-border-softer;
+    -fx-background-radius: 10;
+}
+.progress-bar > .bar {
+    -fx-background-radius: 10;
+    -fx-padding: 9;
+    -fx-background-insets: 0;
+}
+.progress-bar.progress-ok > .bar {
+    -fx-background-color: #27ae60;
+}
+.progress-bar.progress-alerta > .bar {
+    -fx-background-color: #f0ad4e;
+}
+.progress-bar.progress-excedido > .bar {
+    -fx-background-color: -fx-danger;
+}
+
+/* ------------------------------------------------------------
+   10. SCROLLBAR — leve, discreto, alinhado ao restante
+   ------------------------------------------------------------ */
+.scroll-bar .thumb {
+    -fx-background-color: -fx-border-soft;
+    -fx-background-radius: 6;
+}
+.scroll-bar .track {
+    -fx-background-color: transparent;
 }

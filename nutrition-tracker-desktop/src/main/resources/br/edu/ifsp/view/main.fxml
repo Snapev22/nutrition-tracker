@@ -25,10 +25,10 @@
             <Label text="NutritionTracker" styleClass="app-titulo"/>
           </HBox>
           <ToolBar>
-            <Button fx:id="btnNavAlunos" text="Alunos" onAction="#onNavAlunos"/>
-            <Button fx:id="btnNavAlimentos" text="Alimentos" onAction="#onNavAlimentos"/>
-            <Button fx:id="btnNavPlano" text="Plano Diário" onAction="#onNavPlano"/>
-            <Button fx:id="btnNavDashboard" text="Dashboard" onAction="#onNavDashboard"/>
+              <Button fx:id="btnNavAlunos" text="Alunos" styleClass="nav-button" onAction="#onNavAlunos"/>
+              <Button fx:id="btnNavAlimentos" text="Alimentos" styleClass="nav-button" onAction="#onNavAlimentos"/>
+              <Button fx:id="btnNavPlano" text="Plano Diário" styleClass="nav-button" onAction="#onNavPlano"/>
+              <Button fx:id="btnNavDashboard" text="Dashboard" styleClass="nav-button" onAction="#onNavDashboard"/>
           </ToolBar>
         </VBox>
     </top>
