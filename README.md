@@ -11,9 +11,6 @@ Sistema de acompanhamento nutricional para profissionais de nutrição gerenciar
 |---|---|
 | ![Alunos](./docs/screenshots/aluno.png) | ![Alimentos](./docs/screenshots/alimento.png) |
 
-| Dashboard |
-|---|
-| ![Dashboard](./docs/screenshots/dashboard.png) |
 
 </details>
 
