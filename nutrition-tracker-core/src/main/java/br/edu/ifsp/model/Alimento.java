@@ -27,5 +27,6 @@ public class Alimento {
 
     @Enumerated(EnumType.STRING)
     private UnidadeMedida unidadeMedida;
+    private boolean ativo = true;
 
 }

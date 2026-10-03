@@ -24,7 +24,7 @@ public class AlimentoService {
     }
 
     public List<Alimento> listar(){
-        return alimentoRepository.findAllByOrderByNomeAsc();
+        return alimentoRepository.findAllByAtivoTrueOrderByNomeAsc();
     }
 
     public void alterar(Alimento alimentoAlterar) {
@@ -46,11 +46,11 @@ public class AlimentoService {
     }
 
     public void deletar(Long idRemover){
-        if(!alimentoRepository.existsById(idRemover)){
-            throw new EntidadeNaoEncontradaException(
+        Alimento alimento = alimentoRepository.findById(idRemover)
+                .orElseThrow(() ->  new EntidadeNaoEncontradaException(
                     "Falha na remoção. Alimento com id: " + idRemover + " não foi encontrado."
-            );
-        }
-        alimentoRepository.deleteById(idRemover);
+            ));
+        alimento.setAtivo(false);
+        alimentoRepository.save(alimento);
     }
 }

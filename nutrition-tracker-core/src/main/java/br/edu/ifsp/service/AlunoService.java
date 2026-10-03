@@ -32,7 +32,7 @@ public class AlunoService {
 
     public List<Aluno> listar()  {
 
-        return alunoRepository.findAllByOrderByNomeAsc();
+        return alunoRepository.findAllByAtivoTrueOrderByNomeAsc();
     }
 
     public Optional<Aluno> buscarPorId(Long idBuscado) {
@@ -55,11 +55,11 @@ public class AlunoService {
     }
 
     public void deletar(Long idRemover){
-        if(!alunoRepository.existsById(idRemover)){
-            throw  new EntidadeNaoEncontradaException("Falha na remoção. Aluno com id: " + idRemover
-                    + " não foi   encontrado");
-        }
-        alunoRepository.deleteById(idRemover);
+        Aluno aluno = alunoRepository.findById(idRemover)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Falha na remoção. Aluno com id: " + idRemover
+                        + " não foi   encontrado"));
+        aluno.setAtivo(false);
+        alunoRepository.save(aluno);
     }
 
 

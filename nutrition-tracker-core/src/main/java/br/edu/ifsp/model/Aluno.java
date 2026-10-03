@@ -28,6 +28,7 @@ public class Aluno {
     private double altura;
     private double metaCaloricaEstimada;
     private double metaCaloricaDefinida;
+    private boolean ativo = true;
 
     @Enumerated(EnumType.STRING)
     private Sexo sexo;
