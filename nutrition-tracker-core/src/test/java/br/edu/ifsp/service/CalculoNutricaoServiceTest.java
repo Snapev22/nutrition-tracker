@@ -1,10 +1,9 @@
-package br.edu.ifsp;
+package br.edu.ifsp.service;
 
 import br.edu.ifsp.model.Aluno;
 import br.edu.ifsp.model.enums.FatorAtividade;
 import br.edu.ifsp.model.enums.Objetivo;
 import br.edu.ifsp.model.enums.Sexo;
-import br.edu.ifsp.service.CalculoNutricaoService;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
