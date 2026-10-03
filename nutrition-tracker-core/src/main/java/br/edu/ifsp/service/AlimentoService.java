@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +39,10 @@ public class AlimentoService {
         }
 
         alimentoRepository.save(alimentoAlterar);
+    }
+
+    public Optional<Alimento> buscarPorId(Long id){
+        return alimentoRepository.findById(id);
     }
 
     public void deletar(Long idRemover){

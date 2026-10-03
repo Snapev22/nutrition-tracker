@@ -1,6 +1,7 @@
 package br.edu.ifsp.model;
 
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
 @Getter
@@ -9,9 +10,16 @@ import lombok.*;
 @AllArgsConstructor
 @Embeddable
 public class InformacaoNutricional {
+    @PositiveOrZero
     private  double calorias;
+
+    @PositiveOrZero
     private  double proteina;
+
+    @PositiveOrZero
     private  double carboidrato;
+
+    @PositiveOrZero
     private  double gordura;
 
     public InformacaoNutricional multiplicarPor(double fator) {
