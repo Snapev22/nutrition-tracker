@@ -10,14 +10,29 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
 public record AlunoRequestDTO (
-        @NotBlank String nome,
-        @Positive int idade,
-        @Positive double peso,
-        @Positive double altura,
-        @NotNull Sexo sexo,
-        @NotNull FatorAtividade fatorAtividade,
-        @NotNull Objetivo objetivo,
-        @PositiveOrZero Double metaCaloricaDefinida
+        @NotBlank
+        String nome,
+
+        @Positive
+        int idade,
+
+        @Positive
+        double peso,
+
+        @Positive
+        double altura,
+
+        @NotNull
+        Sexo sexo,
+
+        @NotNull
+        FatorAtividade fatorAtividade,
+
+        @NotNull
+        Objetivo objetivo,
+
+        @PositiveOrZero
+        Double metaCaloricaDefinida
 ){
     public Aluno toEntity() {
         Aluno aluno = new Aluno();

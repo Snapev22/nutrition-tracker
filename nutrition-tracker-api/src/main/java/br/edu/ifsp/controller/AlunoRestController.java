@@ -2,6 +2,7 @@ package br.edu.ifsp.controller;
 
 import br.edu.ifsp.dto.requests.AlunoRequestDTO;
 import br.edu.ifsp.dto.responses.AlunoResponseDTO;
+import br.edu.ifsp.exceptions.EntidadeNaoEncontradaException;
 import br.edu.ifsp.model.Aluno;
 import br.edu.ifsp.service.AlunoService;
 import jakarta.validation.Valid;
@@ -46,8 +47,22 @@ public class AlunoRestController {
     @PutMapping("/{id}")
     public ResponseEntity<AlunoResponseDTO> alterar(@PathVariable Long id,
                                                     @Valid @RequestBody AlunoRequestDTO alunoRequestDTO){
-        Aluno aluno = alunoRequestDTO.toEntity();
-        aluno.setId(id);
+        Aluno aluno = alunoService.buscarPorId(id)
+                        .orElseThrow(() -> new EntidadeNaoEncontradaException(
+                                "Falha na alteração. Aluno com id: " + id + " não foi encontrado."));
+
+        aluno.setNome(alunoRequestDTO.nome());
+        aluno.setIdade(alunoRequestDTO.idade());
+        aluno.setPeso(alunoRequestDTO.peso());
+        aluno.setAltura(alunoRequestDTO.altura());
+        aluno.setSexo(alunoRequestDTO.sexo());
+        aluno.setFatorAtividade(alunoRequestDTO.fatorAtividade());
+        aluno.setObjetivo(alunoRequestDTO.objetivo());
+
+        if(alunoRequestDTO.metaCaloricaDefinida() != null){
+            aluno.setMetaCaloricaDefinida(alunoRequestDTO.metaCaloricaDefinida());
+        }
+
         alunoService.alter(aluno);
         return ResponseEntity.ok(AlunoResponseDTO.fromEntity(aluno));
     }
