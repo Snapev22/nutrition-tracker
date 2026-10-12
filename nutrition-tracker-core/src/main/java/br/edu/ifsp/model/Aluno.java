@@ -39,5 +39,8 @@ public class Aluno {
     @Enumerated(EnumType.STRING)
     private Objetivo objetivo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 
 }
