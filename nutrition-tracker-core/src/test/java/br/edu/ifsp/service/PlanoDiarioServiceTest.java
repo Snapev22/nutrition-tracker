@@ -6,12 +6,15 @@ import br.edu.ifsp.model.Alimento;
 import br.edu.ifsp.model.Aluno;
 import br.edu.ifsp.model.InformacaoNutricional;
 import br.edu.ifsp.model.PlanoDiario;
+import br.edu.ifsp.repository.ItemPlanoRepository;
 import br.edu.ifsp.repository.PlanoDiarioRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import br.edu.ifsp.model.ItemPlano;
+import static org.mockito.ArgumentMatchers.eq;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -26,6 +29,12 @@ class PlanoDiarioServiceTest {
     @Mock
     private PlanoDiarioRepository planoDiarioRepository;
 
+    @Mock
+    private ItemPlanoRepository itemPlanoRepository;
+
+    @Mock
+    private PlanoValidacaoService planoValidacaoService;
+
     @InjectMocks
     private PlanoDiarioService planoDiarioService;
 
@@ -34,6 +43,13 @@ class PlanoDiarioServiceTest {
         aluno.setId(1L);
         aluno.setMetaCaloricaDefinida(metaDefinida);
         return aluno;
+    }
+
+    private Alimento criarAlimento(Long id) {
+        Alimento alimento = new Alimento();
+        alimento.setId(id);
+        alimento.setInfoNutricional(new InformacaoNutricional(500.0, 10.0, 50.0, 5.0));
+        return alimento;
     }
 
     @Test
@@ -66,53 +82,63 @@ class PlanoDiarioServiceTest {
     }
 
     @Test
-    void adicionarItem_deveLancarExcecaoQuandoExcedeMetaEIgnorarLimiteFalso() {
-        Aluno aluno = criarAluno(1500.0); // meta baixa, fácil de estourar
-
+    void adicionarItem_naoDeveAdicionarQuandoValidacaoLancaExcecao() {
         PlanoDiario plano = new PlanoDiario();
-        plano.setAluno(aluno);
+        plano.setAluno(criarAluno(1500.0));
+        Alimento alimento = criarAlimento(1L);
 
-        InformacaoNutricional info = new InformacaoNutricional(2000.0, 10.0, 50.0, 5.0);
-        Alimento alimento = new Alimento();
-        alimento.setInfoNutricional(info);
+        // instrui o "fiscal" a reclamar
+        doThrow(MetaCaloricaExcedidaException.class)
+                .when(planoValidacaoService).validarAdicaoItem(eq(plano), any(ItemPlano.class));
 
         assertThrows(MetaCaloricaExcedidaException.class,
                 () -> planoDiarioService.adicionarItem(plano, alimento, 1.0, false));
 
         assertTrue(plano.getItens().isEmpty());
+        verify(itemPlanoRepository, never()).save(any());
     }
 
     @Test
-    void adicionarItem_deveAdicionarMesmoExcedendoQuandoIgnorarLimiteTrue() {
-        Aluno aluno = criarAluno(1500.0);
-
+    void adicionarItem_deveValidarEAdicionarQuandoIgnorarLimiteFalso() {
         PlanoDiario plano = new PlanoDiario();
-        plano.setAluno(aluno);
+        plano.setAluno(criarAluno(3000.0));
+        Alimento alimento = criarAlimento(1L);
 
-        InformacaoNutricional info = new InformacaoNutricional(2000.0, 10.0, 50.0, 5.0);
-        Alimento alimento = new Alimento();
-        alimento.setInfoNutricional(info);
+        planoDiarioService.adicionarItem(plano, alimento, 1.0, false);
 
-        assertDoesNotThrow(() ->
-                planoDiarioService.adicionarItem(plano, alimento, 1.0, true));
-
+        verify(planoValidacaoService).validarAdicaoItem(eq(plano), any(ItemPlano.class));
+        verify(itemPlanoRepository).save(any(ItemPlano.class));
         assertEquals(1, plano.getItens().size());
     }
 
     @Test
-    void adicionarItem_deveAdicionarNormalmenteQuandoDentroDaMeta() {
-        Aluno aluno = criarAluno(3000.0); // meta folgada
-
+    void adicionarItem_deveAdicionarSemValidarQuandoIgnorarLimiteTrue() {
         PlanoDiario plano = new PlanoDiario();
-        plano.setAluno(aluno);
+        plano.setAluno(criarAluno(1500.0));
+        Alimento alimento = criarAlimento(1L);
 
-        InformacaoNutricional info = new InformacaoNutricional(500.0, 10.0, 50.0, 5.0);
-        Alimento alimento = new Alimento();
-        alimento.setInfoNutricional(info);
+        planoDiarioService.adicionarItem(plano, alimento, 1.0, true);
 
-        assertDoesNotThrow(() ->
-                planoDiarioService.adicionarItem(plano, alimento, 1.0, false));
-
+        verify(planoValidacaoService, never()).validarAdicaoItem(any(), any());
+        verify(itemPlanoRepository).save(any(ItemPlano.class));
         assertEquals(1, plano.getItens().size());
+    }
+
+    @Test
+    void adicionarItem_deveMesclarQuantidadeQuandoAlimentoJaEstaNoPlano() {
+        PlanoDiario plano = new PlanoDiario();
+        plano.setAluno(criarAluno(3000.0));
+        Alimento alimento = criarAlimento(1L);
+
+        ItemPlano existente = new ItemPlano();
+        existente.setAlimento(alimento);
+        existente.setQuantidade(100.0);
+        plano.getItens().add(existente);
+
+        planoDiarioService.adicionarItem(plano, alimento, 50.0, true);
+
+        assertEquals(1, plano.getItens().size());   // não duplicou
+        assertEquals(150.0, existente.getQuantidade());
+        verify(itemPlanoRepository).save(existente);
     }
 }
